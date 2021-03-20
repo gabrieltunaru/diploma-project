@@ -12,18 +12,18 @@ import org.json.JSONObject
 object Requester {
     private lateinit var queue: RequestQueue
     private lateinit var ctx: Context
-    private val url = "http://192.168.100.7:3000"
+    private val url = "http://10.0.2.2:3000"
 
 
     fun init(ctx: Context) {
-        this.ctx=ctx
+        this.ctx = ctx
         queue = Volley.newRequestQueue(ctx)
-        Log.d("aici"," initialized")
+        Log.d("aici", " initialized")
     }
 
-    fun post(data: JSONObject) {
+    private fun request(data: JSONObject, method: Int) {
         val req = JsonObjectRequest(
-            Request.Method.POST, url, data,
+            method, url, data,
             Response.Listener { response ->
                 // Display the first 500 characters of the response string.
                 Log.d("aici", "Response is: ${response}")
@@ -35,6 +35,12 @@ object Requester {
 
             })
         queue.add(req)
+    }
 
+    fun post(data: JSONObject) {
+        request(data, Request.Method.POST)
+    }
+    fun get(data: JSONObject) {
+        request(data, Request.Method.GET)
     }
 }

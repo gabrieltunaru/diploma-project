@@ -2,15 +2,12 @@ package com.cannondev.messaging
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.cannondev.messaging.http.Requester
+import com.cannondev.messaging.models.LoginInfo
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
@@ -27,11 +24,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun login(view: View) {
-        Log.d("aici", "emal ${email.text}")
-        Requester.post(JSONObject().put("email", email.text))
-// Request a string response from the provided URL.
-
-
-// Add the request to the RequestQueue.
+        val data = LoginInfo(email.text.toString(),password.text.toString())
+        Requester.post(JSONObject(Gson().toJson(data)))
     }
 }
