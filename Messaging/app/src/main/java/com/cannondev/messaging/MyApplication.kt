@@ -1,12 +1,27 @@
 package com.cannondev.messaging
 
 import android.app.Application
-import com.cannondev.messaging.http.Requester
+import android.content.Context
+import com.cannondev.messaging.http.Queue
 
 class  MyApplication: Application() {
 
+    init {
+        instance = this
+    }
+
+    companion object {
+        private var instance: MyApplication? = null
+
+        fun applicationContext() : Context {
+            return instance!!.applicationContext
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
-        Requester.init(applicationContext)
+        val context = MyApplication.applicationContext()
+        Queue.init(context)
+
     }
 }

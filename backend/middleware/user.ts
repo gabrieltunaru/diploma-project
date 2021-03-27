@@ -11,13 +11,14 @@ async function login(req, res, dbUser) {
       if (equal) {
         const user = dbUser
         const token = user.generateAuthToken()
-        res.header('x-auth-token', token).json(token)
+        res.header('x-auth-token', token).json({key: token})
       } else {
         res.status(400).send('Wrong password')
       }
     })
     .catch((err) => {
       console.error(err)
+      console.error(req.body)
       res.status(500).send(err)
     })
 }
@@ -30,19 +31,21 @@ async function register(req, res) {
   user.password = await bcrypt.hash(user.password, 10)
   await user.save()
   const token = user.generateAuthToken()
-  res.header('x-auth-token', token).json(token)
+  res.header('x-auth-token', token).json({key: token})
 }
 
-router.post('login', async (req, res) => {
+router.post('/auth', async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email })
     if (user) {
-      login(req, res, user)
+      await login(req, res, user)
     } else {
-      register(req, res)
+      await register(req, res)
     }
   } catch (err) {
     console.error(err)
     res.status(500).send(err)
   }
 })
+
+export default router

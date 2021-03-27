@@ -2,12 +2,14 @@ package com.cannondev.messaging
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
-import com.cannondev.messaging.http.Requester
+import android.widget.Toast
+import com.android.volley.Response
+import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.models.LoginInfo
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
@@ -24,7 +26,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun login(view: View) {
-        val data = LoginInfo(email.text.toString(),password.text.toString())
-        Requester.post(JSONObject(Gson().toJson(data)))
+        val data = LoginInfo(email.text.toString(), password.text.toString())
+        val jsonData = JSONObject(Gson().toJson(data))
+        Queue.post("/user/auth", jsonData, Response.Listener { r ->
+            Toast.makeText(this, r.toString(), Toast.LENGTH_SHORT).show()
+            Log.d("a venit raspunsul", r.toString())
+        })
     }
 }
