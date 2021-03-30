@@ -12,7 +12,7 @@ import com.cannondev.messaging.models.LoginInfo
 import com.google.gson.Gson
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity() {
+class AuthActivity : AppCompatActivity() {
     lateinit var email: EditText
     lateinit var password: EditText
 
