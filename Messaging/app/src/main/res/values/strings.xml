@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Messaging</string>
+    <string name="shared_prefs_file">mainFile</string>
 </resources>

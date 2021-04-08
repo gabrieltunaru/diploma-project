@@ -9,6 +9,11 @@ export interface IUser extends Document {
   generateAuthToken: () => string
 }
 
+export interface IDecodedUser {
+  _id: string,
+  email: string
+}
+
 const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
   email: {
     type: String,

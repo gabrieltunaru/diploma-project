@@ -8,12 +8,18 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.cannondev.messaging.Constants.BACKEND_URL
 import com.cannondev.messaging.MyApplication
 import org.json.JSONObject
 
 object Queue {
     private lateinit var queue: RequestQueue
-    private val url = "http://10.0.2.2:3000"
+    private val url = BACKEND_URL
+    val defaultErrorListener = Response.ErrorListener { e ->
+        Toast.makeText(MyApplication.applicationContext(), e.toString(), Toast.LENGTH_SHORT).show()
+        e.printStackTrace()
+        Log.e("Queue",e.message ?: "error")
+    }
 
 
     fun init(ctx: Context) {
@@ -28,10 +34,11 @@ object Queue {
         responseHandler: Response.Listener<JSONObject>
     ) {
         val req = JsonObjectRequest(
-            method, url+path, data,
+            method, url + path, data,
             responseHandler,
             Response.ErrorListener { e ->
-                Toast.makeText(MyApplication.applicationContext(), e.toString(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(MyApplication.applicationContext(), e.toString(), Toast.LENGTH_SHORT)
+                    .show()
             })
         queue.add(req)
     }
@@ -42,5 +49,9 @@ object Queue {
 
     fun get(path: String, data: JSONObject, listener: Response.Listener<JSONObject>) {
         request(path, data, Request.Method.GET, listener)
+    }
+
+    fun getQueue(): RequestQueue {
+        return queue
     }
 }

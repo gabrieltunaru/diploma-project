@@ -3,17 +3,16 @@ package com.cannondev.messaging
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.EditText
 import android.widget.Toast
 import com.android.volley.Response
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.JsonReader
-import com.beust.klaxon.Klaxon
 import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.models.AuthResponse
 import com.cannondev.messaging.models.LoginInfo
@@ -45,6 +44,7 @@ class AuthActivity : AppCompatActivity() {
                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show()
                     val authResponse = Gson().fromJson(r.toString(), AuthResponse::class.java)
                     saveToken(authResponse.key)
+                    goToProfile()
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e(TAG, e.localizedMessage)
@@ -62,9 +62,15 @@ class AuthActivity : AppCompatActivity() {
     }
 
     fun saveToken(token: String) {
-        val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
+        val sharedPref = this.getSharedPreferences(getString(R.string.shared_prefs_file),Context.MODE_PRIVATE)
         sharedPref.edit().putString("authToken", token).apply()
         sharedPref.getString("authToken", "nope")?.let { Log.d("s-a salvat cheia", it) }
+    }
+
+    fun goToProfile() {
+        val intent = Intent(this, ProfileActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     fun login(view: View) {
@@ -78,6 +84,7 @@ class AuthActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this, "Logged in!", Toast.LENGTH_SHORT).show()
                     saveToken(authResponse.key)
+                    goToProfile()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
