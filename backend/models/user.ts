@@ -1,16 +1,17 @@
 import config from 'config'
 import jwt from 'jsonwebtoken'
-import Joi from 'joi'
 import mongoose, { Schema, Document } from 'mongoose'
+import { IProfile } from './profile'
 
 export interface IUser extends Document {
   email: string
   password: string
+  profile: IProfile
   generateAuthToken: () => string
 }
 
 export interface IDecodedUser {
-  _id: string,
+  _id: string
   email: string
 }
 
@@ -28,6 +29,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
     minlength: 3,
     maxlength: 255,
     unique: true,
+  },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile',
   },
 })
 

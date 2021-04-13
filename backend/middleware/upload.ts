@@ -1,0 +1,17 @@
+import multer from 'multer'
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) =>  {
+    cb(null, __dirname + '/../assets/images')
+  },
+  filename: (req, file, cb) => {
+    console.log(Object.keys(file))
+    cb(null, Date.now() + (Math.random() * 100).toFixed(0) + '-'+ file.originalname)
+  },
+})
+
+const upload = multer({
+  storage,
+})
+
+export default upload.single('file')

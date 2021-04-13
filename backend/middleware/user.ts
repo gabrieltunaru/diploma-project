@@ -61,7 +61,10 @@ router.post('/auth', async (req, res) => {
 })
 
 router.get('/getCurrent', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password')
+    const user = await User.findById(req.user._id).select('-password').populate({
+        path: 'profile',
+        model: 'Profile',
+    })
     console.log(user)
     res.send(user)
 })
