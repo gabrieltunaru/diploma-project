@@ -38,7 +38,7 @@ class AuthActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("No account found for this email")
         builder.setMessage("Do you want to create a new account?")
-        builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+        builder.setPositiveButton(android.R.string.ok) { dialog, which ->
             Queue.post("/user/register", jsonData, Response.Listener { r ->
                 try {
                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show()
@@ -54,7 +54,7 @@ class AuthActivity : AppCompatActivity() {
             })
         }
 
-        builder.setNegativeButton(android.R.string.no) { dialog, which ->
+        builder.setNegativeButton(android.R.string.cancel) { dialog, which ->
         }
 
         builder.show()

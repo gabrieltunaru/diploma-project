@@ -1,7 +1,7 @@
 import config from 'config'
 import jwt from 'jsonwebtoken'
 import mongoose, { Schema, Document } from 'mongoose'
-import { IProfile } from './profile'
+import { IProfile } from './profileModel'
 
 export interface IUser extends Document {
   email: string
