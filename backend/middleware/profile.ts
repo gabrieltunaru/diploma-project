@@ -70,17 +70,20 @@ router.post('/setPhoto', [auth, upload], async (req, res, next) => {
     }
 })
 
-const getImage = async (req, res) => {
+router.get('/image/:filename', async (req, res) => {
     const {filename} = req.params
     fs.readFile(generalMid.getFile(filename), (err, data) => {
-        if (err) throw err
-        res.send(data)
+        if (err) {
+            console.error(err)
+            res.sendStatus(400)
+        } else {
+            res.send(data)
+        }
     })
-}
+})
 
 export {
     getProfile,
-    getImage,
     update,
 }
 export default router

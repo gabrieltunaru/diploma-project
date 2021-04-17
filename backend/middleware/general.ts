@@ -64,5 +64,6 @@ export {
     addOne,
     getImage,
     uploadPhoto,
-    router,
 }
+
+export default router

@@ -7,14 +7,18 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Response
+import com.cannondev.messaging.Constants.BACKEND_URL
 import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.http.UserHttp
 import com.cannondev.messaging.models.ProfileModel
 import com.cannondev.messaging.models.UserModel
+import com.cannondev.messaging.utils.ImageHandler
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 
 
 class ProfileActivity : AppCompatActivity() {
@@ -23,11 +27,14 @@ class ProfileActivity : AppCompatActivity() {
     lateinit var authToken: String
     lateinit var username: EditText
     lateinit var details: EditText
+    lateinit var photo: ImageView
     fun getCurrentUser() {
         val req = userHttp.getCurrentUser(applicationContext, Response.Listener { data ->
             val user = Gson().fromJson(data, UserModel::class.java)
             username.setText(user.profile.username)
             details.setText(user.profile.details)
+            val photoUrl = "$BACKEND_URL/general/image/${user.profile.photo}"
+            Picasso.with(applicationContext).load(photoUrl).into(photo)
             Log.d("aici", user.toString())
             Toast.makeText(applicationContext, user.toString(), Toast.LENGTH_SHORT).show()
         })
@@ -69,6 +76,7 @@ class ProfileActivity : AppCompatActivity() {
 
         username = findViewById(R.id.profileUsername)
         details = findViewById(R.id.profileDetails)
+        photo = findViewById(R.id.profileAvatar)
 
 
         val sharedPref =
