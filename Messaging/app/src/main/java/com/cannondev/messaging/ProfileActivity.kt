@@ -24,6 +24,7 @@ class ProfileActivity : AppCompatActivity() {
     lateinit var details: EditText
     lateinit var photo: ImageView
     lateinit var user: UserModel
+    lateinit var fileName: String
     fun getCurrentUser() {
         val req = userHttp.getCurrentUser(applicationContext, Response.Listener { data ->
             user = Gson().fromJson(data, UserModel::class.java)
@@ -40,7 +41,7 @@ class ProfileActivity : AppCompatActivity() {
             username = username.text.toString(),
             details = details.text.toString(),
             id = null,
-            photo = user.profile?.photo
+            photo = fileName
         )
         userHttp.setProfile(profile)
     }
@@ -57,7 +58,10 @@ class ProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE) {
-            data?.data?.let { ImageHandler.uploadImage(it, baseContext, authToken) }
+            data?.data?.let { ImageHandler.uploadImage(it, baseContext, authToken, Response.Listener{
+                fileName = String(it.data)
+                ImageHandler.loadPhoto(baseContext, String(it.data), photo)
+            }) }
         }
     }
 

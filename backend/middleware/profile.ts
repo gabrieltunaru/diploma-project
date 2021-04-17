@@ -63,7 +63,7 @@ router.post('/setPhoto', [auth, upload], async (req, res, next) => {
         const user = (await userModel.findById(decoded._id))
         const profile = await ProfileModel.findById(user.profile)
         await profile.update({photo: file.filename})
-        res.send(file)
+        res.send(file.filename)
     } catch (err) {
         console.error(err)
         res.status(400).send(err)

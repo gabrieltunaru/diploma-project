@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
+import com.android.volley.NetworkResponse
 import com.android.volley.Response
 import com.cannondev.messaging.Constants.BACKEND_URL
 import com.cannondev.messaging.FileDataPart
@@ -33,22 +34,20 @@ object ImageHandler {
     }
 
 
-    fun uploadImage(uri: Uri, context: Context, authToken: String) {
+    fun uploadImage(uri: Uri, context: Context, authToken: String, respListener: Response.Listener<NetworkResponse>) {
         val contentResolver = context.contentResolver
         val inputStream = contentResolver.openInputStream(uri)
         inputStream?.buffered()?.use {
-            sendToServer((it.readBytes()), context, authToken)
+            sendToServer((it.readBytes()), context, authToken, respListener)
         }
     }
 
-    fun sendToServer(imageData: ByteArray,context: Context , authToken: String) {
+    fun sendToServer(imageData: ByteArray,context: Context , authToken: String, respListener: Response.Listener<NetworkResponse>) {
         val request = object : VolleyFileUploadRequest(
             Method.POST,
             "${BACKEND_URL}/profile/setPhoto",
             authToken,
-            Response.Listener {
-                println("response is: $it")
-            },
+            respListener,
             Response.ErrorListener {
                 Toast.makeText(context, "Couldn't upload image", Toast.LENGTH_SHORT).show()
             }
