@@ -2,6 +2,7 @@ import express from 'express'
 import User, {IDecodedUser} from '../models/user'
 import bcrypt from 'bcrypt'
 import auth from './auth'
+import {ProfileModel} from '../models/profileModel'
 
 const router = express.Router()
 
@@ -70,9 +71,11 @@ router.get('/getCurrent', auth, async (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
+    const profile = await new ProfileModel().save()
     const user = new User({
         password: req.body.password,
         email: req.body.email,
+        profile
     })
     user.password = await bcrypt.hash(user.password, 10)
     await user.save()
