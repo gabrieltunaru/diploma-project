@@ -31,7 +31,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="53dp"
         android:ems="10"
-        android:hint="Username"
+        android:hint="john.doe"
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileAvatar" />
@@ -43,7 +43,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="34dp"
         android:ems="10"
-        android:hint="Details"
+        android:hint="Software Engineer"
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileUsername" />
@@ -68,5 +68,27 @@
         android:text="Click to change photo"
         app:layout_constraintStart_toEndOf="@+id/profileAvatar"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/UsernameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="34dp"
+        android:labelFor="@id/profileUsername"
+        android:text="Username"
+        app:layout_constraintBottom_toTopOf="@+id/profileUsername"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileAvatar"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/DetailsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:text="Details"
+        app:layout_constraintBottom_toTopOf="@+id/profileDetails"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
