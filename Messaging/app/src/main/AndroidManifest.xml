@@ -13,7 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Messaging"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ProfileActivity"></activity>
+        <activity
+            android:name=".NavigationActivity"
+            android:label="@string/title_activity_navigation"
+            android:theme="@style/Theme.Messaging.NoActionBar"></activity>
+        <activity android:name=".ProfileActivity" />
         <activity android:name=".AuthActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
