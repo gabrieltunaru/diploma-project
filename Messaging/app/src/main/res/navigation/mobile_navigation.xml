@@ -7,19 +7,18 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.cannondev.messaging.ui.home.HomeFragment"
+        android:name="com.cannondev.messaging.AuthActivity"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/activity_main" >
+        <action
+            android:id="@+id/action_nav_home_to_nav_gallery"
+            app:destination="@id/nav_gallery" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.cannondev.messaging.ui.gallery.GalleryFragment"
+        android:name="com.cannondev.messaging.ProfileActivity"
         android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/activity_profile" />
 
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.cannondev.messaging.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
 </navigation>
