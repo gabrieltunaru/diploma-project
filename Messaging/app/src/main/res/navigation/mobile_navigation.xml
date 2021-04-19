@@ -7,18 +7,29 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.cannondev.messaging.AuthActivity"
+        android:name="com.cannondev.messaging.ui.AuthFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/activity_main" >
+        tools:layout="@layout/fragment_auth" >
         <action
             android:id="@+id/action_nav_home_to_nav_gallery"
-            app:destination="@id/nav_gallery" />
+            app:destination="@id/nav_gallery"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:launchSingleTop="false"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.cannondev.messaging.ProfileActivity"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/activity_profile" />
+        android:name="com.cannondev.messaging.ui.ProfileFragment"
+        android:label="@string/menu_profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/nav_contacts"
+        android:name="com.cannondev.messaging.ui.ContactsFragment"
+        android:label="@string/menu_contacts"
+        tools:layout="@layout/fragment_contacts" />
 
 </navigation>

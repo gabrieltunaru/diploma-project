@@ -1,8 +1,7 @@
-package com.cannondev.messaging
+package com.cannondev.messaging.ui
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,11 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import com.android.volley.Response
+import com.cannondev.messaging.R
 import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.models.AuthResponse
 import com.cannondev.messaging.models.LoginInfo
@@ -22,7 +21,7 @@ import com.google.gson.Gson
 import org.json.JSONObject
 
 
-class AuthActivity : Fragment() {
+class AuthFragment : Fragment() {
     private val TAG = "AuthActivity"
     lateinit var email: EditText
     lateinit var password: EditText
@@ -32,7 +31,7 @@ class AuthActivity : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.activity_main, null) as ViewGroup
+        val root = inflater.inflate(R.layout.fragment_auth, null) as ViewGroup
 
         email = root.findViewById(R.id.editTextTextEmailAddress)
         password = root.findViewById(R.id.editTextNumberPassword)

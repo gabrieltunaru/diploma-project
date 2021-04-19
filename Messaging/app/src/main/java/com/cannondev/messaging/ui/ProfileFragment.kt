@@ -1,36 +1,27 @@
-package com.cannondev.messaging
+package com.cannondev.messaging.ui
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.android.volley.Response
+import com.cannondev.messaging.R
 import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.http.UserHttp
 import com.cannondev.messaging.models.ProfileModel
 import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.ImageHandler
-import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 
 
-class ProfileActivity : Fragment() {
+class ProfileFragment : Fragment() {
     val rq = Queue.getQueue()
     lateinit var userHttp: UserHttp
     lateinit var authToken: String
@@ -89,7 +80,7 @@ class ProfileActivity : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.activity_profile, null) as ViewGroup
+        val root = inflater.inflate(R.layout.fragment_profile, null) as ViewGroup
 
         username = root.findViewById(R.id.profileUsername)
         details = root.findViewById(R.id.profileDetails)

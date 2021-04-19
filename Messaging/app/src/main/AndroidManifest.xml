@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Messaging"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".NavigationActivity"
+            android:name=".ui.NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/Theme.Messaging.NoActionBar">
             <intent-filter>
