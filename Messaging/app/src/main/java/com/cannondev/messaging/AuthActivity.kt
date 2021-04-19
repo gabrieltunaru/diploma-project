@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import com.android.volley.Response
 import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.models.AuthResponse
@@ -50,7 +51,7 @@ class AuthActivity : Fragment() {
                     Toast.makeText(activity, "Account created!", Toast.LENGTH_SHORT).show()
                     val authResponse = Gson().fromJson(r.toString(), AuthResponse::class.java)
                     saveToken(authResponse.key)
-//                    goToProfile()
+                    goToProfile()
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e(TAG, e.localizedMessage)
@@ -77,9 +78,7 @@ class AuthActivity : Fragment() {
     }
 
     fun goToProfile() {
-        val action =
-            SpecifyAmountFragmentDirections
-                .actionSpecifyAmountFragmentToConfirmationFragment(amount)
+        NavHostFragment.findNavController(this).navigate(R.id.action_nav_home_to_nav_gallery)
     }
 
     fun login(view: View) {

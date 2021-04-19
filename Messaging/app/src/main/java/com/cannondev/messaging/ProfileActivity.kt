@@ -75,6 +75,7 @@ class ProfileActivity : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        val ctx = requireContext()
         if (requestCode == PICK_IMAGE) {
             data?.data?.let { ImageHandler.uploadImage(it, ctx, authToken, Response.Listener{
                 fileName = String(it.data)
@@ -95,7 +96,7 @@ class ProfileActivity : Fragment() {
         photo = root.findViewById(R.id.profileAvatar)
         val btn = root.findViewById<Button>(R.id.saveProfile)
         btn.setOnClickListener { setProfile(it) }
-
+        photo.setOnClickListener { setPhoto(it) }
         val sharedPref =
             activity?.getSharedPreferences(getString(R.string.shared_prefs_file), Context.MODE_PRIVATE)!!
         authToken = sharedPref.getString("authToken", "").toString()
