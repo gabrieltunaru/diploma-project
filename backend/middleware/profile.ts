@@ -2,7 +2,6 @@ import userModel from '../models/user'
 import * as generalMid from './general'
 import fs from 'fs'
 import User from '../models/user'
-import {ProfileModel} from "../models/profileModel"
 import express from 'express'
 import auth from "./auth"
 import upload from "./upload"
@@ -12,11 +11,10 @@ const router = express.Router()
 router.post('/setProfile', auth, async (req, res) => {
     try {
         console.log('got profile', req.body)
-        const profile = new ProfileModel({...req.body})
+        const profile = req.body
         const userId = generalMid.decoded(req.headers)._id
         const user = await User.findById(userId)
         user.profile = profile
-        await profile.save()
         await user.save()
         res.status(200).send({})
     } catch (err) {
@@ -24,20 +22,6 @@ router.post('/setProfile', auth, async (req, res) => {
         res.status(500).json(err)
     }
 })
-
-const update = async (req, res) => {
-    try {
-        const profile = await ProfileModel.findByIdAndUpdate(req.body._id, req.body)
-        const userId = generalMid.decoded(req.headers)._id
-        const user = await User.findById(userId)
-        user.profile = profile
-        await user.save()
-        res.status(200).send({})
-    } catch (err) {
-        console.error(err)
-        res.status(500).json(err)
-    }
-}
 
 const getProfile = async (req, res) => {
     try {
@@ -61,8 +45,9 @@ router.post('/setPhoto', [auth, upload], async (req, res, next) => {
         }
         const decoded = generalMid.decoded(req.headers)
         const user = (await userModel.findById(decoded._id))
-        const profile = await ProfileModel.findById(user.profile)
-        await profile.update({photo: file.filename})
+        const profile = user.profile
+        profile.photo = file.filename
+        await user.save()
         res.send(file.filename)
     } catch (err) {
         console.error(err)
@@ -84,6 +69,5 @@ router.get('/image/:filename', async (req, res) => {
 
 export {
     getProfile,
-    update,
 }
 export default router

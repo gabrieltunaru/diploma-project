@@ -1,8 +1,12 @@
 import config from 'config'
 import jwt from 'jsonwebtoken'
 import mongoose, {Schema, Document} from 'mongoose'
-import {IProfile, ProfileSchema} from './profileModel'
 
+interface IProfile extends Document {
+  username: string
+  details: string
+  photo: string
+}
 export interface IUser extends Document {
   email: string
   password: string
@@ -31,7 +35,17 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
     maxlength: 255,
     unique: true,
   },
-  profile: ProfileSchema,
+  profile: {
+    username: {
+      type: String,
+    },
+    details: {
+      type: String,
+    },
+    photo: {
+      type: String,
+    },
+  },
   contacts: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
