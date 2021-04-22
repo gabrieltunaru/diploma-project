@@ -4,6 +4,7 @@ interface IProfile extends Document {
   username: string
   details: string
   photo: string
+  _id: string
 }
 
 const ProfileSchema = new mongoose.Schema({

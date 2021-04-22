@@ -1,12 +1,13 @@
 import config from 'config'
 import jwt from 'jsonwebtoken'
-import mongoose, { Schema, Document } from 'mongoose'
-import { IProfile } from './profileModel'
+import mongoose, {Schema, Document} from 'mongoose'
+import {IProfile, ProfileSchema} from './profileModel'
 
 export interface IUser extends Document {
   email: string
   password: string
-  profile: IProfile
+  profile: IProfile,
+  contacts: [string],
   generateAuthToken: () => string
 }
 
@@ -30,10 +31,11 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
     maxlength: 255,
     unique: true,
   },
-  profile: {
+  profile: ProfileSchema,
+  contacts: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Profile',
-  },
+    ref: 'User',
+  }]
 })
 
 UserSchema.methods.generateAuthToken = function () {

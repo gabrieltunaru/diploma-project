@@ -11,6 +11,11 @@ const decoded = (headers) => {
     return jwt.verify(token, config.get('privateKey'))
 }
 
+const getUserId = headers => {
+    const user = decoded(headers)
+    return user._id
+}
+
 function getFile(filename) {
     return __dirname + '/../assets/images/' + filename
 }
@@ -64,6 +69,7 @@ export {
     addOne,
     getImage,
     uploadPhoto,
+    getUserId
 }
 
 export default router
