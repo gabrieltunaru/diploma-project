@@ -3,13 +3,19 @@ package com.cannondev.messaging.http
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.cannondev.messaging.Constants
 import com.cannondev.messaging.Constants.BACKEND_URL
 import com.cannondev.messaging.MyApplication
+import com.cannondev.messaging.R
+import com.cannondev.messaging.models.Gsonable
+import com.cannondev.messaging.models.ProfileModel
+import com.google.gson.JsonObject
 import org.json.JSONObject
 
 object Queue {
@@ -18,7 +24,7 @@ object Queue {
     val defaultErrorListener = Response.ErrorListener { e ->
         Toast.makeText(MyApplication.applicationContext(), e.toString(), Toast.LENGTH_SHORT).show()
         e.printStackTrace()
-        Log.e("Queue",e.message ?: "error")
+        Log.e("Queue", e.message ?: "error")
     }
 
 
@@ -49,6 +55,25 @@ object Queue {
 
     fun get(path: String, data: JSONObject, listener: Response.Listener<JSONObject>) {
         request(path, data, Request.Method.GET, listener)
+    }
+
+    fun jsonRequest(path: String, data: Gsonable, ctx: Context, responseListener: Response.Listener<JSONObject>?) {
+        val sharedPref =
+            ctx.getSharedPreferences(ctx.getString(R.string.shared_prefs_file), Context.MODE_PRIVATE)!!
+        val authToken = sharedPref.getString("authToken", "").toString()
+        val req = object : JsonObjectRequest(
+            "${BACKEND_URL}/${path}",
+            data.toJsonString(),
+            responseListener ?: Response.Listener {},
+            defaultErrorListener
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                headers["x-auth-token"] = authToken
+                return headers
+            }
+        }
+        queue.add(req)
     }
 
     fun getQueue(): RequestQueue {
