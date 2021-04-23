@@ -11,7 +11,7 @@ export interface IUser extends Document {
   email: string
   password: string
   profile: IProfile,
-  contacts: [string],
+  contacts: [IUser],
   generateAuthToken: () => string
 }
 

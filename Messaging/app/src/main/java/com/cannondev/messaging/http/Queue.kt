@@ -8,6 +8,7 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.cannondev.messaging.Constants
 import com.cannondev.messaging.Constants.BACKEND_URL
@@ -15,6 +16,7 @@ import com.cannondev.messaging.MyApplication
 import com.cannondev.messaging.R
 import com.cannondev.messaging.models.Gsonable
 import com.cannondev.messaging.models.ProfileModel
+import com.cannondev.messaging.utils.Utils
 import com.google.gson.JsonObject
 import org.json.JSONObject
 
@@ -57,13 +59,12 @@ object Queue {
         request(path, data, Request.Method.GET, listener)
     }
 
-    fun jsonRequest(path: String, data: Gsonable, ctx: Context, responseListener: Response.Listener<JSONObject>?) {
-        val sharedPref =
-            ctx.getSharedPreferences(ctx.getString(R.string.shared_prefs_file), Context.MODE_PRIVATE)!!
-        val authToken = sharedPref.getString("authToken", "").toString()
+    fun jsonRequest(path: String, data: Gsonable?, ctx: Context, responseListener: Response.Listener<JSONObject>?) {
+        val authToken = Utils.getSavedAuthToken(ctx)
+        val dataString = data?.toJsonString() ?: JSONObject()
         val req = object : JsonObjectRequest(
             "${BACKEND_URL}/${path}",
-            data.toJsonString(),
+            dataString,
             responseListener ?: Response.Listener {},
             defaultErrorListener
         ) {
