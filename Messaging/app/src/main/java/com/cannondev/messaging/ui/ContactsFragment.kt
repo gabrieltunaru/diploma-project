@@ -31,13 +31,15 @@ class ContactsFragment : Fragment() {
             contacts = Gson().fromJson(data.getJSONArray("contacts").toString(), itemType)
             Log.d(this::class.simpleName, contacts.toString())
             if (savedInstanceState == null) {
-                childFragmentManager
-                    .beginTransaction()
-                    .add(
-                        R.id.fragment_container_view,
-                        ContactFragment.newInstance(contacts[0].toJsonString().toString())
-                    )
-                    .commit()
+                for (contact in contacts) {
+                    childFragmentManager
+                        .beginTransaction()
+                        .add(
+                            R.id.fragment_container_view,
+                            ContactFragment.newInstance(contact.toJsonString().toString())
+                        )
+                        .commit()
+                }
             }
 
         }, requireContext())
