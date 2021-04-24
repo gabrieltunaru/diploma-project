@@ -10,12 +10,13 @@
         android:id="@+id/pseudoId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
         android:layout_marginTop="39dp"
         android:ems="10"
         android:hint="Search user"
         android:inputType="textPersonName"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="23dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/searchContactsBtn"
@@ -25,6 +26,14 @@
         android:layout_marginTop="27dp"
         android:src="?android:attr/actionModeWebSearchDrawable"
         app:layout_constraintStart_toEndOf="@+id/pseudoId"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="125dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

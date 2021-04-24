@@ -9,16 +9,36 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatImageButton
+import androidx.core.os.bundleOf
 import com.cannondev.messaging.R
 import com.cannondev.messaging.http.ContactsHttp
+import com.cannondev.messaging.models.ProfileModel
+import com.cannondev.messaging.models.UserModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlin.reflect.typeOf
 
 class ContactsFragment : Fragment() {
     lateinit var contactPseudoId: EditText
     lateinit var searchContactsButton: AppCompatImageButton
+    lateinit var contacts: List<UserModel>
 
-    fun getContacts() {
+    fun getContacts(savedInstanceState: Bundle?) {
         ContactsHttp.getContacts({ data ->
             Log.d(this::class.simpleName, data.toString())
+
+            val itemType = object : TypeToken<List<UserModel>>() {}.type
+            contacts = Gson().fromJson(data.getJSONArray("contacts").toString(), itemType)
+            Log.d(this::class.simpleName, contacts.toString())
+            if (savedInstanceState == null) {
+                childFragmentManager
+                    .beginTransaction()
+                    .add(
+                        R.id.fragment_container_view,
+                        ContactFragment.newInstance(contacts[0].toJsonString().toString())
+                    )
+                    .commit()
+            }
 
         }, requireContext())
     }
@@ -33,7 +53,7 @@ class ContactsFragment : Fragment() {
         searchContactsButton.setOnClickListener {
             ContactsHttp.addContact(contactPseudoId.text.toString(), requireContext())
         }
-        getContacts()
+        getContacts(savedInstanceState)
         return root
     }
 
