@@ -3,6 +3,7 @@ import config from 'config'
 import bodyParser from 'body-parser'
 import db from './db'
 import routes from './middleware/routes'
+import logger from './logger'
 
 if (!config.get('privateKey')) {
   console.error('FATAL ERROR: private key not defined')
@@ -18,5 +19,5 @@ const port = 3000
 
 app.use('/', routes)
 app.listen(port, () => {
-  console.log(`server is listening on ${port}`)
+  logger.info(`server is listening on ${port}`)
 })

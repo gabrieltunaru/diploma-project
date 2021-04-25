@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import logger from './logger'
 function init() {
   mongoose
     .connect('mongodb://172.17.0.1/diploma', {
@@ -6,7 +7,7 @@ function init() {
       useUnifiedTopology: true,
     })
     .then(() => {
-      console.log('Connected to MongoDB')
+      logger.info('Connected to MongoDB')
     })
     .catch((e) => console.error(e))
 }
