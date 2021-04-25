@@ -32,17 +32,19 @@ class ContactsFragment : Fragment() {
             Log.d(this::class.simpleName, contacts.toString())
             if (savedInstanceState == null) {
                 for (contact in contacts) {
-                    childFragmentManager
-                        .beginTransaction()
-                        .add(
-                            R.id.contacts_scroll_layout,
-                            ContactFragment.newInstance(contact.toJsonString().toString())
-                        )
-                        .commit()
+                    addContact(contact)
                 }
             }
-
         }, requireContext())
+    }
+    fun addContact(contact: UserModel) {
+        childFragmentManager
+            .beginTransaction()
+            .add(
+                R.id.contacts_scroll_layout,
+                ContactFragment.newInstance(contact.toJsonString().toString())
+            )
+            .commit()
     }
 
     override fun onCreateView(
@@ -53,7 +55,10 @@ class ContactsFragment : Fragment() {
         contactPseudoId = root.findViewById(R.id.pseudoId)
         searchContactsButton = root.findViewById(R.id.searchContactsBtn)
         searchContactsButton.setOnClickListener {
-            ContactsHttp.addContact(contactPseudoId.text.toString(), requireContext())
+            ContactsHttp.addContact(contactPseudoId.text.toString(), requireContext()) {
+                val contact = Gson().fromJson(it.toString(), UserModel::class.java)
+                addContact(contact)
+            }
         }
         getContacts(savedInstanceState)
         return root

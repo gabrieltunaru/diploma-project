@@ -9,9 +9,9 @@ import org.json.JSONObject
 data class Contact(val contactPseudoId: String): Gsonable()
 
 object ContactsHttp {
-    fun addContact(contactPseudoId: String, ctx: Context) {
+    fun addContact(contactPseudoId: String, ctx: Context, resListener: Response.Listener<JSONObject>) {
         val contact = Contact(contactPseudoId)
-        Queue.jsonRequest("contacts/add", contact, ctx, null)
+        Queue.jsonRequest("contacts/add", contact, ctx, resListener)
     }
 
     fun getContacts(listener: Response.Listener<JSONObject>, ctx: Context) {

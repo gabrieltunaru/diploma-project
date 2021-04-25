@@ -24,7 +24,8 @@ object Queue {
     private lateinit var queue: RequestQueue
     private val url = BACKEND_URL
     val defaultErrorListener = Response.ErrorListener { e ->
-        Toast.makeText(MyApplication.applicationContext(), e.toString(), Toast.LENGTH_SHORT).show()
+        val errMessage = String(e.networkResponse.data)
+        Toast.makeText(MyApplication.applicationContext(), errMessage, Toast.LENGTH_SHORT).show()
         e.printStackTrace()
         Log.e("Queue", e.message ?: "error")
     }
