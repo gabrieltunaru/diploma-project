@@ -35,7 +35,7 @@ class ContactsFragment : Fragment() {
                     childFragmentManager
                         .beginTransaction()
                         .add(
-                            R.id.fragment_container_view,
+                            R.id.contacts_scroll_layout,
                             ContactFragment.newInstance(contact.toJsonString().toString())
                         )
                         .commit()

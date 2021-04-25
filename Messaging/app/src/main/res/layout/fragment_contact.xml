@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="275dp"
     android:layout_height="80dp"
-    tools:context=".ui.AuthFragment" >
+    android:background="#FFFFFF"
+    android:backgroundTint="#CBC7C7"
+    android:backgroundTintMode="src_atop"
+    android:focusable="auto"
+    tools:context=".ui.AuthFragment">
 
     <ImageView
         android:id="@+id/contact_avatar"
