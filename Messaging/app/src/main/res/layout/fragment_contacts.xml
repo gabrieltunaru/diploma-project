@@ -13,7 +13,7 @@
         android:layout_marginStart="23dp"
         android:layout_marginTop="39dp"
         android:ems="10"
-        android:hint="Search user"
+        android:hint="username / email"
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,9 +22,10 @@
         android:id="@+id/searchContactsBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="27dp"
-        android:src="?android:attr/actionModeWebSearchDrawable"
+        android:layout_marginTop="45dp"
+        android:background="#FFFFFF"
+        android:rotation="-45"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
         app:layout_constraintStart_toEndOf="@+id/pseudoId"
         app:layout_constraintTop_toTopOf="parent" />
 
