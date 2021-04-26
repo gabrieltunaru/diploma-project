@@ -12,7 +12,7 @@ import com.cannondev.messaging.models.UserModel
 
 
 class ConversationFragment : Fragment() {
-    lateinit var contact: UserModel
+    private lateinit var contact: UserModel
     private val args: ConversationFragmentArgs by navArgs()
 
 
