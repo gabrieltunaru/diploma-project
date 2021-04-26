@@ -4,8 +4,10 @@ import android.content.Context
 import com.android.volley.NetworkResponse
 import com.android.volley.Response
 import com.cannondev.messaging.models.Gsonable
+import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
+@Parcelize
 data class Contact(val contactPseudoId: String): Gsonable()
 
 object ContactsHttp {

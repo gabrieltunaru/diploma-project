@@ -6,9 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.NavHostFragment
@@ -60,7 +58,8 @@ class ContactFragment : Fragment() {
     }
 
     fun goToConversation() {
-        NavHostFragment.findNavController(this).navigate(R.id.action_nav_contacts_to_nav_conversation)
+        val action = ContactsFragmentDirections.actionNavContactsToNavConversation(contact)
+        NavHostFragment.findNavController(this).navigate(action)
     }
 
     companion object {
