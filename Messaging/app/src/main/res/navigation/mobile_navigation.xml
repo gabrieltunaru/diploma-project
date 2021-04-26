@@ -30,6 +30,16 @@
         android:id="@+id/nav_contacts"
         android:name="com.cannondev.messaging.ui.ContactsFragment"
         android:label="@string/menu_contacts"
-        tools:layout="@layout/fragment_contacts" />
+        tools:layout="@layout/fragment_contacts" >
+        <action
+            android:id="@+id/action_nav_contacts_to_nav_conversation"
+            app:destination="@id/nav_conversation" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_conversation"
+        android:name="com.cannondev.messaging.ui.ConversationFragment"
+        android:label="Conversation"
+        tools:layout="@layout/fragment_conversation" />
 
 </navigation>

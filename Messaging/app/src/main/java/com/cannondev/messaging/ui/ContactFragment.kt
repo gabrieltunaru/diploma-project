@@ -8,7 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.navigation.fragment.NavHostFragment
 import com.cannondev.messaging.R
 import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.ImageHandler
@@ -44,8 +47,20 @@ class ContactFragment : Fragment() {
         username.text = contact.profile?.username
         details.text = contact.profile?.details
         ImageHandler.loadPhoto(requireContext(), contact.profile?.photo, photo)
-
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val contactContainer = view.findViewById<ConstraintLayout>(R.id.contact_container)
+        contactContainer.setOnClickListener{
+            goToConversation()
+        }
+    }
+
+    fun goToConversation() {
+        NavHostFragment.findNavController(this).navigate(R.id.action_nav_contacts_to_nav_conversation)
     }
 
     companion object {
