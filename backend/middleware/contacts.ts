@@ -27,6 +27,11 @@ router.post('/add', [auth], async (req, res, next) => {
   })
   if (newContact) {
     const currentUser = await userModel.findById(userId)
+    if (currentUser.contacts.includes(newContact._id)) {
+      res.status(400).send('Cannot add a contact already added')
+      next()
+      return
+    }
     currentUser.contacts.push(newContact)
     await currentUser.save()
     res.json(newContact)

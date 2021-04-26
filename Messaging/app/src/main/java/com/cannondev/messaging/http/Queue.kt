@@ -24,10 +24,10 @@ object Queue {
     private lateinit var queue: RequestQueue
     private val url = BACKEND_URL
     val defaultErrorListener = Response.ErrorListener { e ->
-        val errMessage = String(e.networkResponse.data)
+        val errData = e.networkResponse.data
+        val errMessage = if (errData != null && errData.isNotEmpty()) String(errData) else "Error"
         Toast.makeText(MyApplication.applicationContext(), errMessage, Toast.LENGTH_SHORT).show()
-        e.printStackTrace()
-        Log.e("Queue", e.message ?: "error")
+        Log.e("Queue", errMessage)
     }
 
 
@@ -60,7 +60,12 @@ object Queue {
         request(path, data, Request.Method.GET, listener)
     }
 
-    fun jsonRequest(path: String, data: Gsonable?, ctx: Context, responseListener: Response.Listener<JSONObject>?) {
+    fun jsonRequest(
+        path: String,
+        data: Gsonable?,
+        ctx: Context,
+        responseListener: Response.Listener<JSONObject>?
+    ) {
         val authToken = Utils.getSavedAuthToken(ctx)
         val dataString = data?.toJsonString() ?: JSONObject()
         val req = object : JsonObjectRequest(
