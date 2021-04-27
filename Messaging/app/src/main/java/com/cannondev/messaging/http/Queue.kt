@@ -24,10 +24,20 @@ object Queue {
     private lateinit var queue: RequestQueue
     private val url = BACKEND_URL
     val defaultErrorListener = Response.ErrorListener { e ->
-        val errData = e.networkResponse.data
-        val errMessage = if (errData != null && errData.isNotEmpty()) String(errData) else "Error"
-        Toast.makeText(MyApplication.applicationContext(), errMessage, Toast.LENGTH_SHORT).show()
-        Log.e("Queue", errMessage)
+        if (e.networkResponse == null) {
+            Toast.makeText(
+                MyApplication.applicationContext(),
+                "Can't connect to server",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            val errData = e.networkResponse.data
+            val errMessage =
+                if (errData != null && errData.isNotEmpty()) String(errData) else "Error"
+            Toast.makeText(MyApplication.applicationContext(), errMessage, Toast.LENGTH_SHORT)
+                .show()
+            Log.e("Queue", errMessage)
+        }
     }
 
 

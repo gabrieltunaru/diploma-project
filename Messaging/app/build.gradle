@@ -56,6 +56,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
     implementation "com.squareup.picasso:picasso:2.4.0"
+    implementation "org.java-websocket:Java-WebSocket:1.5.1"
+    implementation("org.slf4j:slf4j-api:1.7.25")
+    implementation("org.slf4j:slf4j-log4j12:1.7.5")
+    implementation 'org.conscrypt:conscrypt-android:2.2.1'
 }
 
 apply plugin: 'kotlin-parcelize'
