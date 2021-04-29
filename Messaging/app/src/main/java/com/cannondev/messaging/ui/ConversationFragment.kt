@@ -2,26 +2,22 @@ package com.cannondev.messaging.ui
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.cannondev.messaging.R
 import com.cannondev.messaging.models.UserModel
-import org.java_websocket.WebSocket
-import org.java_websocket.client.WebSocketClient
-import org.java_websocket.handshake.ServerHandshake
-import java.lang.Exception
+import com.cannondev.messaging.utils.NaiveSSLContext
+import com.neovisionaries.ws.client.WebSocketFactory
 import java.net.URI
-import javax.net.ssl.SSLSocketFactory
 
 
 class ConversationFragment : Fragment() {
     private lateinit var contact: UserModel
     private val args: ConversationFragmentArgs by navArgs()
     private val TAG = this::class.simpleName
-    private lateinit var ws: WebSocketClient
 
 
     override fun onCreateView(
@@ -42,32 +38,21 @@ class ConversationFragment : Fragment() {
     }
 
     private fun wsTest() {
-        val uri = URI("wss://10.0.2.2:3000")
-        ws = object: WebSocketClient(uri){
-            override fun onOpen(handshakedata: ServerHandshake?) {
-                Log.d(TAG, "onOpen")
-            }
+        val uri = URI("ws://10.0.2.2:3000")
+        val factory = WebSocketFactory();
+        val context = NaiveSSLContext.getInstance("TLS")
+        factory.sslContext = context
 
-            override fun onMessage(message: String?) {
-                Log.d(TAG, "onMessage")
-            }
+        factory.verifyHostname = false;
+        val ws = factory.createSocket(uri)
+        Thread{
+            ws.connect()
+            ws.sendBinary("mergee".toByteArray())
+        }.start()
+// Set the custom SSL context.
 
-            override fun onClose(code: Int, reason: String?, remote: Boolean) {
-                Log.d(TAG, "onClose")
-            }
+// Set the custom SSL context.
 
-            override fun onError(ex: Exception?) {
-                ex?.printStackTrace()
-                Log.e(TAG, "onError")
-            }
-        }
-//        val socketFactory: SSLSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
-//        ws.setSocketFactory(socketFactory)
-
-        ws.connectBlocking()
-        Log.d(TAG, "ws?")
-        Log.d(TAG, "${ws.connection}")
-//        ws.send("hahaha")
     }
 
 
