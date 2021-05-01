@@ -47,6 +47,9 @@ class ConversationFragment : Fragment() {
             )
             .commit()
     }
+    private fun showMessage(text: String?) {
+        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
+    }
 
     private fun wsTest() {
         val ctx = requireContext()
@@ -60,8 +63,10 @@ class ConversationFragment : Fragment() {
             override fun onTextMessage(websocket: WebSocket?, text: String?) {
                 super.onTextMessage(websocket, text)
                 Log.d(TAG, text ?: "nope")
-                Handler(Looper.getMainLooper()).postDelayed({
+                showMessage("uite ba: $text")
 
+                Handler(Looper.getMainLooper()).postDelayed({
+                    showMessage(text)
                     Log.d(TAG, "ar trebui sa mearga..")
                     Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show()
                 }, 3000)
