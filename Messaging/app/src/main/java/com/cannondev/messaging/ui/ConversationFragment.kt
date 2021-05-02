@@ -1,5 +1,6 @@
 package com.cannondev.messaging.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
@@ -16,6 +18,7 @@ import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.NaiveSSLContext
 import com.neovisionaries.ws.client.WebSocket
 import com.neovisionaries.ws.client.WebSocketAdapter
+import com.neovisionaries.ws.client.WebSocketException
 import com.neovisionaries.ws.client.WebSocketFactory
 import java.net.URI
 
@@ -25,6 +28,7 @@ class ConversationFragment : Fragment() {
     private val args: ConversationFragmentArgs by navArgs()
     private val TAG = this::class.simpleName
     lateinit var ws: WebSocket
+    lateinit var msTest: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +36,7 @@ class ConversationFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_conversation, container, false)
         val sendBtn = root.findViewById<AppCompatImageButton>(R.id.sendMessageBtn)
+        msTest = root.findViewById(R.id.messageTest)
         sendBtn.setOnClickListener{
             ws.sendText("hopa")
         }
@@ -47,8 +52,11 @@ class ConversationFragment : Fragment() {
             )
             .commit()
     }
-    private fun showMessage(text: String?) {
-        Toast.makeText(requireContext(), text, Toast.LENGTH_SHORT).show()
+    private fun showMessage(ctx: Context, text: String?) {
+        activity?.runOnUiThread{
+            Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show()
+            msTest.text = text
+        }
     }
 
     private fun wsTest() {
@@ -61,22 +69,19 @@ class ConversationFragment : Fragment() {
         ws = factory.createSocket(uri)
         ws.addListener(object : WebSocketAdapter() {
             override fun onTextMessage(websocket: WebSocket?, text: String?) {
-                super.onTextMessage(websocket, text)
+//                super.onTextMessage(websocket, text)
                 Log.d(TAG, text ?: "nope")
-                showMessage("uite ba: $text")
+                showMessage(ctx, "uite ba: $text")
+//                Handler(Looper.getMainLooper()).post{
+//                    showMessage(ctx, "ce naiba")
+//                }
+            }
 
-                Handler(Looper.getMainLooper()).postDelayed({
-                    showMessage(text)
-                    Log.d(TAG, "ar trebui sa mearga..")
-                    Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show()
-                }, 3000)
-
+            override fun onError(websocket: WebSocket?, cause: WebSocketException?) {
+                cause?.printStackTrace()
             }
         })
-        Thread{
-            ws.connect()
-            ws.sendBinary("mergee".toByteArray())
-        }.start()
+        ws.connectAsynchronously()
 // Set the custom SSL context.
 
 // Set the custom SSL context.
