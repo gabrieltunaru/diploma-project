@@ -13,12 +13,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Messaging"
         android:usesCleartextTraffic="true">
+        <service
+            android:name=".MessagingService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".ui.NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/Theme.Messaging.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

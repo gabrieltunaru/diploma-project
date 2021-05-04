@@ -1,8 +1,12 @@
 package com.cannondev.messaging.ui
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
+import com.cannondev.messaging.MessagingService
 import com.cannondev.messaging.R
 import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.NaiveSSLContext
@@ -27,8 +32,22 @@ class ConversationFragment : Fragment() {
     private lateinit var contact: UserModel
     private val args: ConversationFragmentArgs by navArgs()
     private val TAG = this::class.simpleName
-    lateinit var ws: WebSocket
     lateinit var msTest: TextView
+    private lateinit var mService: MessagingService
+    private var mBound: Boolean = false
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as MessagingService.LocalBinder
+            mService = binder.getService()
+            mBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            mBound = false
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,9 +57,15 @@ class ConversationFragment : Fragment() {
         val sendBtn = root.findViewById<AppCompatImageButton>(R.id.sendMessageBtn)
         msTest = root.findViewById(R.id.messageTest)
         sendBtn.setOnClickListener{
-            ws.sendText("hopa")
+            sendText("hopa")
         }
         return root
+    }
+
+    private fun sendText(text: String?) {
+        if (mBound) {
+            mService.send(text)
+        }
     }
 
     private fun addContactView() {
@@ -59,42 +84,25 @@ class ConversationFragment : Fragment() {
         }
     }
 
-    private fun wsTest() {
+    override fun onStart() {
+        super.onStart()
         val ctx = requireContext()
-        val uri = URI("ws://10.0.2.2:3000")
-        val factory = WebSocketFactory();
-        val context = NaiveSSLContext.getInstance("TLS")
-        factory.sslContext = context
-        factory.verifyHostname = false;
-        ws = factory.createSocket(uri)
-        ws.addListener(object : WebSocketAdapter() {
-            override fun onTextMessage(websocket: WebSocket?, text: String?) {
-//                super.onTextMessage(websocket, text)
-                Log.d(TAG, text ?: "nope")
-                showMessage(ctx, "uite ba: $text")
-//                Handler(Looper.getMainLooper()).post{
-//                    showMessage(ctx, "ce naiba")
-//                }
-            }
-
-            override fun onError(websocket: WebSocket?, cause: WebSocketException?) {
-                cause?.printStackTrace()
-            }
-        })
-        ws.connectAsynchronously()
-// Set the custom SSL context.
-
-// Set the custom SSL context.
-
+        Intent(ctx, MessagingService::class.java).also { intent ->
+            ctx.bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
     }
 
+    override fun onStop() {
+        super.onStop()
+        requireContext().unbindService(connection)
+        mBound = false
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         contact = args.contact
         addContactView()
         Log.d(this::class.simpleName, "$contact")
-        wsTest()
     }
 
     override fun onDestroyView() {
