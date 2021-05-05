@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.core.os.bundleOf
 import com.cannondev.messaging.R
 import com.cannondev.messaging.http.ContactsHttp
+import com.cannondev.messaging.models.ConnectionModel
 import com.cannondev.messaging.models.ProfileModel
 import com.cannondev.messaging.models.UserModel
 import com.google.gson.Gson
@@ -21,23 +22,23 @@ import kotlin.reflect.typeOf
 class ContactsFragment : Fragment() {
     lateinit var contactPseudoId: EditText
     lateinit var searchContactsButton: AppCompatImageButton
-    lateinit var contacts: List<UserModel>
+    lateinit var connections: List<ConnectionModel>
 
     fun getContacts(savedInstanceState: Bundle?) {
         ContactsHttp.getContacts({ data ->
             Log.d(this::class.simpleName, data.toString())
 
-            val itemType = object : TypeToken<List<UserModel>>() {}.type
-            contacts = Gson().fromJson(data.getJSONArray("contacts").toString(), itemType)
-            Log.d(this::class.simpleName, contacts.toString())
+            val itemType = object : TypeToken<List<ConnectionModel>>() {}.type
+            connections = Gson().fromJson(data.getJSONArray("connections").toString(), itemType)
+            Log.d(this::class.simpleName, "got from backend: $connections")
             if (savedInstanceState == null) {
-                for (contact in contacts) {
+                for (contact in connections) {
                     addContact(contact)
                 }
             }
         }, requireContext())
     }
-    fun addContact(contact: UserModel) {
+    fun addContact(contact: ConnectionModel) {
         childFragmentManager
             .beginTransaction()
             .add(
@@ -56,7 +57,7 @@ class ContactsFragment : Fragment() {
         searchContactsButton = root.findViewById(R.id.searchContactsBtn)
         searchContactsButton.setOnClickListener {
             ContactsHttp.addContact(contactPseudoId.text.toString(), requireContext()) {
-                val contact = Gson().fromJson(it.toString(), UserModel::class.java)
+                val contact = Gson().fromJson(it.toString(), ConnectionModel::class.java)
                 addContact(contact)
             }
         }

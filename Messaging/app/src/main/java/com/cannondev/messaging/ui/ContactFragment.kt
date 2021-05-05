@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.NavHostFragment
 import com.cannondev.messaging.R
+import com.cannondev.messaging.models.ConnectionModel
 import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.ImageHandler
 import com.google.gson.Gson
@@ -18,8 +19,9 @@ import com.google.gson.Gson
 private const val ARG_PARAM1 = "param1"
 
 class ContactFragment : Fragment() {
+    private lateinit var connection: ConnectionModel
     private lateinit var contact: UserModel
-    private var contactJson: String? = null
+    private var connectionJson: String? = null
     lateinit var username: TextView
     lateinit var details: TextView
     lateinit var photo: ImageView
@@ -27,10 +29,11 @@ class ContactFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            contactJson = it.getString(ARG_PARAM1)
-            contact = Gson().fromJson(contactJson, UserModel::class.java)
+            connectionJson = it.getString(ARG_PARAM1)
+            connection = Gson().fromJson(connectionJson, ConnectionModel::class.java)
+            contact = connection.otherUser
 
-            Log.d(this::class.java.simpleName, "created fragment: ${contact.toString()}")
+            Log.d(this::class.java.simpleName, "created fragment: ${connection.toString()}")
         }
     }
 
@@ -58,7 +61,7 @@ class ContactFragment : Fragment() {
     }
 
     fun goToConversation() {
-        val action = ContactsFragmentDirections.actionNavContactsToNavConversation(contact)
+        val action = ContactsFragmentDirections.actionNavContactsToNavConversation(connection)
         NavHostFragment.findNavController(this).navigate(action)
     }
 

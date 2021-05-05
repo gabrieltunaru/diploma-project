@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.cannondev.messaging.MessagingService
 import com.cannondev.messaging.R
+import com.cannondev.messaging.models.ConnectionModel
 import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.NaiveSSLContext
 import com.neovisionaries.ws.client.WebSocket
@@ -30,6 +31,7 @@ import java.net.URI
 
 
 class ConversationFragment : Fragment() {
+    private lateinit var conversation: ConnectionModel
     private lateinit var contact: UserModel
     private val args: ConversationFragmentArgs by navArgs()
     private val TAG = this::class.simpleName
@@ -76,7 +78,7 @@ class ConversationFragment : Fragment() {
             .beginTransaction()
             .add(
                 R.id.conversation_contact_container,
-                ContactFragment.newInstance(contact.toJsonString().toString())
+                ContactFragment.newInstance(conversation.toJsonString().toString())
             )
             .commit()
     }
@@ -103,9 +105,10 @@ class ConversationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        contact = args.contact
+        conversation = args.connection
+        contact = conversation.otherUser
         addContactView()
-        Log.d(this::class.simpleName, "$contact")
+        Log.d(this::class.simpleName, "conv: $conversation")
     }
 
     override fun onDestroyView() {

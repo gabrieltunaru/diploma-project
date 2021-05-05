@@ -25,6 +25,7 @@ object Queue {
     private val url = BACKEND_URL
     val defaultErrorListener = Response.ErrorListener { e ->
         if (e.networkResponse == null) {
+            e.printStackTrace()
             Toast.makeText(
                 MyApplication.applicationContext(),
                 "Can't connect to server",
