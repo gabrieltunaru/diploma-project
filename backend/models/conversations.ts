@@ -1,13 +1,13 @@
 import mongoose, {Document, Schema, SchemaDefinition} from 'mongoose'
 import {IUser} from './user'
 
-export interface IConnection extends Document {
+export interface IConversation extends Document {
   otherUser?: IUser
   isPrivate: boolean,
   users: [IUser]
 }
 
-const ConnectionSchema: Schema<IConnection> = new Schema<IConnection>(
+const ConversationSchema: Schema<IConversation> = new Schema<IConversation>(
   {
     isPrivate: {
       type: Boolean,
@@ -20,6 +20,6 @@ const ConnectionSchema: Schema<IConnection> = new Schema<IConnection>(
   }
 )
 
-const ConnectionModel = mongoose.model<IConnection>('Connection', ConnectionSchema)
+const ConversationModel = mongoose.model<IConversation>('Conversation', ConversationSchema)
 
-export default ConnectionModel
+export default ConversationModel

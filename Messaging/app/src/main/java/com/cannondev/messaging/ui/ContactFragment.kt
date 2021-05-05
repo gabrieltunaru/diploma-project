@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.NavHostFragment
 import com.cannondev.messaging.R
-import com.cannondev.messaging.models.ConnectionModel
+import com.cannondev.messaging.models.ConversationModel
 import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.ImageHandler
 import com.google.gson.Gson
@@ -19,9 +19,9 @@ import com.google.gson.Gson
 private const val ARG_PARAM1 = "param1"
 
 class ContactFragment : Fragment() {
-    private lateinit var connection: ConnectionModel
+    private lateinit var conversation: ConversationModel
     private lateinit var contact: UserModel
-    private var connectionJson: String? = null
+    private var conversationJson: String? = null
     lateinit var username: TextView
     lateinit var details: TextView
     lateinit var photo: ImageView
@@ -29,11 +29,11 @@ class ContactFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            connectionJson = it.getString(ARG_PARAM1)
-            connection = Gson().fromJson(connectionJson, ConnectionModel::class.java)
-            contact = connection.otherUser
+            conversationJson = it.getString(ARG_PARAM1)
+            conversation = Gson().fromJson(conversationJson, ConversationModel::class.java)
+            contact = conversation.otherUser
 
-            Log.d(this::class.java.simpleName, "created fragment: ${connection.toString()}")
+            Log.d(this::class.java.simpleName, "created fragment: ${conversation.toString()}")
         }
     }
 
@@ -61,7 +61,7 @@ class ContactFragment : Fragment() {
     }
 
     fun goToConversation() {
-        val action = ContactsFragmentDirections.actionNavContactsToNavConversation(connection)
+        val action = ContactsFragmentDirections.actionNavContactsToNavConversation(conversation)
         NavHostFragment.findNavController(this).navigate(action)
     }
 

@@ -42,8 +42,8 @@
         android:label="Conversation"
         tools:layout="@layout/fragment_conversation" >
         <argument
-            android:name="connection"
-            app:argType="com.cannondev.messaging.models.ConnectionModel" />
+            android:name="conversation"
+            app:argType="com.cannondev.messaging.models.ConversationModel" />
     </fragment>
 
 </navigation>

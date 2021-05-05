@@ -1,7 +1,7 @@
 import config from 'config'
 import jwt from 'jsonwebtoken'
 import mongoose, {Document, Schema} from 'mongoose'
-import {IConnection} from './connections'
+import {IConversation} from './conversations'
 
 interface IProfile extends Document {
   username: string
@@ -12,7 +12,7 @@ export interface IUser extends Document {
   email: string
   password: string
   profile: IProfile,
-  connections: [IConnection],
+  conversations: [IConversation],
   generateAuthToken: () => string
 }
 
@@ -47,9 +47,9 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
       type: String,
     },
   },
-  connections: [{
+  conversations: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Connection',
+    ref: 'Conversation',
   }]
 })
 

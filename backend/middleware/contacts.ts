@@ -3,26 +3,26 @@ import auth from './auth'
 import {decoded, getUserId} from './general'
 import userModel, {IUser} from '../models/user'
 import logger from '../logger'
-import ConnectionModel, {IConnection} from '../models/connections'
+import ConversationModel, {IConversation} from '../models/conversations'
 
 const router = Router()
 
 router.post('/getAll', [auth], async (req, res, next) => {
   const userId = decoded(req.headers)._id
-  const {connections} = await userModel
+  const {conversations} = await userModel
     .findById(userId)
-    .populate({path: 'connections', populate: 'users'})
-    .select('connections')
+    .populate({path: 'conversations', populate: 'users'})
+    .select('conversations')
   const conns = []
-  connections.forEach(conn =>{
+  conversations.forEach(conn => {
     conns.push({
       _id: conn._id,
       isPrivate: conn.isPrivate,
       otherUser: conn.users.find(x => x._id !== userId)
     })
-  } )
+  })
   logger.debug(conns)
-  res.json({connections: conns})
+  res.json({conversations: conns})
   next()
 })
 
@@ -36,20 +36,20 @@ router.post('/add', [auth], async (req, res, next) => {
     ]
   })
   if (newContact) {
-    const currentUser = await userModel.findById(userId).populate('connections')
-    for (const connection of currentUser.connections) {
-      if (connection.users.includes(newContact._id)) {
+    const currentUser = await userModel.findById(userId).populate('conversations')
+    for (const conversation of currentUser.conversations) {
+      if (conversation.users.includes(newContact._id)) {
         res.status(400).send('Cannot add a contact already added')
         next()
         return
       }
     }
-    const newConnection = new ConnectionModel()
-    newConnection.users.push(currentUser)
-    newConnection.users.push(newContact)
-    await newConnection.save()
-    currentUser.connections.push(newConnection)
-    newContact.connections.push(newConnection)
+    const newConversation = new ConversationModel()
+    newConversation.users.push(currentUser)
+    newConversation.users.push(newContact)
+    await newConversation.save()
+    currentUser.conversations.push(newConversation)
+    newContact.conversations.push(newConversation)
     await currentUser.save()
     res.json(newContact)
     logger.debug(`Add contact: ${newContact}`)

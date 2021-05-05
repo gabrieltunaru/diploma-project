@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,18 +18,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.cannondev.messaging.MessagingService
 import com.cannondev.messaging.R
-import com.cannondev.messaging.models.ConnectionModel
+import com.cannondev.messaging.models.ConversationModel
 import com.cannondev.messaging.models.UserModel
-import com.cannondev.messaging.utils.NaiveSSLContext
-import com.neovisionaries.ws.client.WebSocket
-import com.neovisionaries.ws.client.WebSocketAdapter
-import com.neovisionaries.ws.client.WebSocketException
-import com.neovisionaries.ws.client.WebSocketFactory
-import java.net.URI
 
 
 class ConversationFragment : Fragment() {
-    private lateinit var conversation: ConnectionModel
+    private lateinit var conversation: ConversationModel
     private lateinit var contact: UserModel
     private val args: ConversationFragmentArgs by navArgs()
     private val TAG = this::class.simpleName
@@ -105,7 +97,7 @@ class ConversationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        conversation = args.connection
+        conversation = args.conversation
         contact = conversation.otherUser
         addContactView()
         Log.d(this::class.simpleName, "conv: $conversation")
