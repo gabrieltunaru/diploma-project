@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
@@ -56,8 +57,10 @@ class ConversationFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_conversation, container, false)
         val sendBtn = root.findViewById<AppCompatImageButton>(R.id.sendMessageBtn)
         msTest = root.findViewById(R.id.messageTest)
+        val msgText = root.findViewById<EditText>(R.id.messageText)
         sendBtn.setOnClickListener{
-            sendText("hopa")
+            sendText(msgText.text.toString())
+            msgText.setText("")
         }
         return root
     }

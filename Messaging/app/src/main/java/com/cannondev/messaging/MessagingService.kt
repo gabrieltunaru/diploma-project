@@ -5,12 +5,17 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import com.cannondev.messaging.models.Message
 import com.cannondev.messaging.utils.NaiveSSLContext
+import com.cannondev.messaging.utils.Utils
 import com.neovisionaries.ws.client.WebSocket
 import com.neovisionaries.ws.client.WebSocketAdapter
 import com.neovisionaries.ws.client.WebSocketException
 import com.neovisionaries.ws.client.WebSocketFactory
+import java.lang.Exception
 import java.net.URI
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 class MessagingService : Service() {
     private lateinit var ws: WebSocket
@@ -44,11 +49,26 @@ class MessagingService : Service() {
                 cause?.printStackTrace()
             }
         })
-        ws.connectAsynchronously()
+
+        val es = Executors.newSingleThreadExecutor();
+
+        val future = ws.connect(es);
+
+        try {
+            future.get()
+            sendInit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun send(text: String?) {
         ws.sendText(text)
+    }
+
+    fun sendInit() {
+        val data = Message("init", Utils.getSavedAuthToken(applicationContext), null, null)
+        ws.sendText(data.toJsonString().toString())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
