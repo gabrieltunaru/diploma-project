@@ -3,18 +3,39 @@ import logger from './logger'
 import * as winston from 'winston'
 import {getUserId} from './middleware/general'
 
+interface ConversationMessage {
+  type: string,
+  token: string,
+  text?: string,
+  otherUserId: string,
+  conversationId: string
+}
 
 const connectedUsers = {}
 
-function handleInitMessage(data, ws) {
+function handleInitMessage(data: ConversationMessage, ws) {
   const userId = getUserId(data.token)
-  connectedUsers[userId] = ws
+  if (!connectedUsers[data.conversationId]) {
+    connectedUsers[data.conversationId][userId] = ws
+  } else {
+    connectedUsers[data.conversationId]= {[userId]: ws}
+  }
+}
+
+function handleTextMessage(data: ConversationMessage) {
+  if (!connectedUsers[data.otherUserId]) {
+    // handle not connected
+  } else {
+    connectedUsers[data.otherUserId].send(JSON.stringify(data))
+  }
 }
 
 function handleMessage(text, ws) {
   const data = JSON.parse(text)
   if (data.type === 'init') {
     handleInitMessage(data, ws)
+  } else if (data.type === 'text') {
+    handleTextMessage(data)
   }
 }
 

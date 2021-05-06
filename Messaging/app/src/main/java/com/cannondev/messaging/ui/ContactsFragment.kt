@@ -21,11 +21,11 @@ class ContactsFragment : Fragment() {
 
     fun getContacts(savedInstanceState: Bundle?) {
         ContactsHttp.getContacts({ data ->
-            Log.d(this::class.simpleName, data.toString())
+            Log.d(this::class.simpleName, "got from backend: $data")
 
             val itemType = object : TypeToken<List<ConversationModel>>() {}.type
             conversations = Gson().fromJson(data.getJSONArray("conversations").toString(), itemType)
-            Log.d(this::class.simpleName, "got from backend: $conversations")
+            Log.d(this::class.simpleName, "parsed: $conversations")
             if (savedInstanceState == null) {
                 for (contact in conversations) {
                     addContact(contact)

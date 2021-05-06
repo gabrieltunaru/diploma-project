@@ -61,7 +61,7 @@ class ConversationFragment : Fragment() {
 
     private fun sendText(text: String?) {
         if (mBound) {
-            mService.send(text)
+            mService.send(text, conversation)
         }
     }
 

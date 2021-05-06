@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import com.cannondev.messaging.models.ConversationMessage
+import com.cannondev.messaging.models.ConversationModel
 import com.cannondev.messaging.models.Message
 import com.cannondev.messaging.utils.NaiveSSLContext
 import com.cannondev.messaging.utils.Utils
@@ -31,6 +33,7 @@ class MessagingService : Service() {
     }
 
     fun handleMessage(text: String?) {
+        Log.d(this::class.simpleName, "received ws message: $text")
     }
 
     fun connect() {
@@ -62,8 +65,9 @@ class MessagingService : Service() {
         }
     }
 
-    fun send(text: String?) {
-        ws.sendText(text)
+    fun send(text: String?, conversation: ConversationModel) {
+        val message = ConversationMessage("text", Utils.getSavedAuthToken(applicationContext), text, conversation.otherUser.id, conversation.id )
+        ws.sendText(message.toJsonString().toString())
     }
 
     fun sendInit() {

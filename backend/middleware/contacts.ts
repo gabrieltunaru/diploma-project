@@ -7,21 +7,31 @@ import ConversationModel, {IConversation} from '../models/conversations'
 
 const router = Router()
 
+function parseConversation(conn, userId) {
+  const foundId = conn.users.find(x => String(x._id) !== userId)._id
+  console.log("ids: ", foundId !== userId, foundId, userId, typeof foundId, typeof userId)
+  return {
+    _id: conn._id,
+    isPrivate: conn.isPrivate,
+    otherUser: conn.users.find(x => String(x._id) !== userId)
+  }
+}
+
+function parseConversations(conversations, userId) {
+  const conns = []
+  conversations.forEach(conn => {
+    conns.push(parseConversation(conn, userId))
+  })
+  return conns
+}
+
 router.post('/getAll', [auth], async (req, res, next) => {
   const userId = decoded(req.headers)._id
   const {conversations} = await userModel
     .findById(userId)
     .populate({path: 'conversations', populate: 'users'})
     .select('conversations')
-  const conns = []
-  conversations.forEach(conn => {
-    conns.push({
-      _id: conn._id,
-      isPrivate: conn.isPrivate,
-      otherUser: conn.users.find(x => x._id !== userId)
-    })
-  })
-  logger.debug(conns)
+  const conns = parseConversations(conversations, userId)
   res.json({conversations: conns})
   next()
 })
@@ -51,7 +61,8 @@ router.post('/add', [auth], async (req, res, next) => {
     currentUser.conversations.push(newConversation)
     newContact.conversations.push(newConversation)
     await currentUser.save()
-    res.json(newContact)
+    await newContact.save()
+    res.json(parseConversation(newConversation, userId))
     logger.debug(`Add contact: ${newContact}`)
   } else {
     logger.debug('Add contact: 404')
