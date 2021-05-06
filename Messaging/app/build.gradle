@@ -57,6 +57,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
     implementation "com.squareup.picasso:picasso:2.4.0"
     implementation 'com.neovisionaries:nv-websocket-client:2.14'
+    implementation "io.reactivex.rxjava3:rxjava:3.0.13-RC4"
 }
 
 apply plugin: 'kotlin-parcelize'

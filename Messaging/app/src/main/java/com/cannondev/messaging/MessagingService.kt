@@ -10,17 +10,21 @@ import com.cannondev.messaging.models.ConversationModel
 import com.cannondev.messaging.models.Message
 import com.cannondev.messaging.utils.NaiveSSLContext
 import com.cannondev.messaging.utils.Utils
+import com.google.gson.Gson
 import com.neovisionaries.ws.client.WebSocket
 import com.neovisionaries.ws.client.WebSocketAdapter
 import com.neovisionaries.ws.client.WebSocketException
 import com.neovisionaries.ws.client.WebSocketFactory
+import io.reactivex.rxjava3.subjects.PublishSubject
 import java.lang.Exception
 import java.net.URI
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
 class MessagingService : Service() {
     private lateinit var ws: WebSocket
+    val messagePublisher = PublishSubject.create<ConversationMessage>()
 
     private val binder = LocalBinder()
 
@@ -33,7 +37,9 @@ class MessagingService : Service() {
     }
 
     fun handleMessage(text: String?) {
-        Log.d(this::class.simpleName, "received ws message: $text")
+        val message = Gson().fromJson(text, ConversationMessage::class.java)
+        messagePublisher.onNext(message)
+        Log.d(this::class.simpleName, "received ws message: $message")
     }
 
     fun connect() {

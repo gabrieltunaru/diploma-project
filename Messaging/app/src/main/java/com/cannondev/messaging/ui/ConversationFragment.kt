@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.cannondev.messaging.MessagingService
 import com.cannondev.messaging.R
+import com.cannondev.messaging.models.ConversationMessage
 import com.cannondev.messaging.models.ConversationModel
 import com.cannondev.messaging.models.UserModel
 
@@ -36,11 +37,23 @@ class ConversationFragment : Fragment() {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as MessagingService.LocalBinder
             mService = binder.getService()
+            mService.messagePublisher.subscribe{ handleMessage(it) }
             mBound = true
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
             mBound = false
+        }
+    }
+
+    fun handleMessage(message: ConversationMessage) {
+        try {
+            activity?.runOnUiThread{
+                Log.d(TAG, "message got to conv: $message")
+                msTest.text = message.text
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
