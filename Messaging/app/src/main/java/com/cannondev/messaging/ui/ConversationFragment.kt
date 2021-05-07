@@ -7,12 +7,14 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.LAYOUT_DIRECTION_RTL
+import android.view.View.TEXT_ALIGNMENT_VIEW_END
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
@@ -28,16 +30,16 @@ class ConversationFragment : Fragment() {
     private lateinit var contact: UserModel
     private val args: ConversationFragmentArgs by navArgs()
     private val TAG = this::class.simpleName
-    lateinit var msTest: TextView
     private lateinit var mService: MessagingService
     private var mBound: Boolean = false
+    private lateinit var messagesLayout: LinearLayout
 
     private val connection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as MessagingService.LocalBinder
             mService = binder.getService()
-            mService.messagePublisher.subscribe{ handleMessage(it) }
+            mService.messagePublisher.subscribe { handleMessage(it) }
             mBound = true
         }
 
@@ -48,13 +50,34 @@ class ConversationFragment : Fragment() {
 
     fun handleMessage(message: ConversationMessage) {
         try {
-            activity?.runOnUiThread{
+            activity?.runOnUiThread {
                 Log.d(TAG, "message got to conv: $message")
-                msTest.text = message.text
+                addMessage(message.text, false)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun addMessage(text: String?, isSender: Boolean) {
+        val textView = MessageView(requireContext())
+        textView.text = text
+        val params: LinearLayout.LayoutParams =
+            LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        if (isSender) {
+            textView.setBackgroundResource(R.drawable.rounded_corner)
+            textView.setPadding(15, 15, 15, 15)
+            params.setMargins(200, 0, 50, 0)
+            params.gravity = Gravity.END
+        } else {
+            params.setMargins(50, 0, 200, 0)
+        }
+        textView.textSize = 24.0F
+        textView.layoutParams = params
+        messagesLayout.addView(textView)
     }
 
     override fun onCreateView(
@@ -63,9 +86,9 @@ class ConversationFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_conversation, container, false)
         val sendBtn = root.findViewById<AppCompatImageButton>(R.id.sendMessageBtn)
-        msTest = root.findViewById(R.id.messageTest)
+        messagesLayout = root.findViewById(R.id.messagesLayout)
         val msgText = root.findViewById<EditText>(R.id.messageText)
-        sendBtn.setOnClickListener{
+        sendBtn.setOnClickListener {
             sendText(msgText.text.toString())
             msgText.setText("")
         }
@@ -75,6 +98,7 @@ class ConversationFragment : Fragment() {
     private fun sendText(text: String?) {
         if (mBound) {
             mService.send(text, conversation)
+            addMessage(text, true)
         }
     }
 
@@ -86,12 +110,6 @@ class ConversationFragment : Fragment() {
                 ContactFragment.newInstance(conversation.toJsonString().toString())
             )
             .commit()
-    }
-    private fun showMessage(ctx: Context, text: String?) {
-        activity?.runOnUiThread{
-            Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show()
-            msTest.text = text
-        }
     }
 
     override fun onStart() {

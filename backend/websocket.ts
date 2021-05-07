@@ -13,7 +13,6 @@ interface ConversationMessage {
 const connectedUsers = {}
 
 function handleInitMessage(data: ConversationMessage, ws) {
-  console.log("cvid", data.conversationId)
   const userId = getUserIdFromTokenString(data.token)
   if (connectedUsers) {
     connectedUsers[userId] = ws
