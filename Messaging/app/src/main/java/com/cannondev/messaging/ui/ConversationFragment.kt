@@ -50,9 +50,11 @@ class ConversationFragment : Fragment() {
 
     fun handleMessage(message: ConversationMessage) {
         try {
-            activity?.runOnUiThread {
-                Log.d(TAG, "message got to conv: $message")
-                addMessage(message.text, false)
+            if (message.conversationId == conversation.id) {
+                activity?.runOnUiThread {
+                    Log.d(TAG, "message got to conv: $message")
+                    addMessage(message.text, false)
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
