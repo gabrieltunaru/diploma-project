@@ -2,6 +2,8 @@ import express from 'express'
 import User, {IDecodedUser} from '../models/user'
 import bcrypt from 'bcrypt'
 import auth from './auth'
+import {getUserId} from './general'
+import logger from '../logger'
 
 const router = express.Router()
 
@@ -70,9 +72,11 @@ router.get('/getCurrent', auth, async (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
+    const { pbKey , email, password } = req.body
     const user = new User({
-        password: req.body.password,
-        email: req.body.email,
+        password,
+        email,
+        pbKey,
         profile: {},
         contacts: []
     })

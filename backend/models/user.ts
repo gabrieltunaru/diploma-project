@@ -13,6 +13,7 @@ export interface IUser extends Document {
   password: string
   profile: IProfile,
   conversations: [IConversation],
+  pbKey: string,
   generateAuthToken: () => string
 }
 
@@ -36,6 +37,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
     maxlength: 255,
     unique: true,
   },
+  pbKey: String,
   profile: {
     username: {
       type: String,
