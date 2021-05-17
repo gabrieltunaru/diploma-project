@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Base64
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -23,6 +24,11 @@ import com.cannondev.messaging.R
 import com.cannondev.messaging.models.ConversationMessage
 import com.cannondev.messaging.models.ConversationModel
 import com.cannondev.messaging.models.UserModel
+import com.cannondev.messaging.utils.Encryption
+import java.security.KeyFactory
+import java.security.PrivateKey
+import java.security.PublicKey
+import java.security.spec.X509EncodedKeySpec
 
 
 class ConversationFragment : Fragment() {
@@ -33,6 +39,8 @@ class ConversationFragment : Fragment() {
     private lateinit var mService: MessagingService
     private var mBound: Boolean = false
     private lateinit var messagesLayout: LinearLayout
+    private lateinit var pbKey: PublicKey
+    private var pvKey: PrivateKey? = null
 
     private val connection = object : ServiceConnection {
 
@@ -53,7 +61,8 @@ class ConversationFragment : Fragment() {
             if (message.conversationId == conversation.id) {
                 activity?.runOnUiThread {
                     Log.d(TAG, "message got to conv: $message")
-                    addMessage(message.text, false)
+                    val text = Encryption.decryptMessage(message.text ?: "", pvKey!!)
+                    addMessage(text, false)
                 }
             }
         } catch (e: Exception) {
@@ -99,7 +108,7 @@ class ConversationFragment : Fragment() {
 
     private fun sendText(text: String?) {
         if (mBound) {
-            mService.send(text, conversation)
+            mService.send(text ?: "", conversation, pbKey)
             addMessage(text, true)
         }
     }
@@ -120,6 +129,7 @@ class ConversationFragment : Fragment() {
         Intent(ctx, MessagingService::class.java).also { intent ->
             ctx.bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
+        pvKey = Encryption.getPrivateKey()
     }
 
     override fun onStop() {
@@ -132,14 +142,9 @@ class ConversationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         conversation = args.conversation
         contact = conversation.otherUser
+        pbKey = KeyFactory.getInstance("RSA").generatePublic(X509EncodedKeySpec(Base64.decode(contact.pbKey, Base64.DEFAULT)))
         addContactView()
         Log.d(this::class.simpleName, "conv: $conversation")
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-//        ws.close()
-    }
-
 
 }

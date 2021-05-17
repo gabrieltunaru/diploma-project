@@ -8,6 +8,7 @@ import android.util.Log
 import com.cannondev.messaging.models.ConversationMessage
 import com.cannondev.messaging.models.ConversationModel
 import com.cannondev.messaging.models.Message
+import com.cannondev.messaging.utils.Encryption
 import com.cannondev.messaging.utils.NaiveSSLContext
 import com.cannondev.messaging.utils.Utils
 import com.google.gson.Gson
@@ -18,6 +19,8 @@ import com.neovisionaries.ws.client.WebSocketFactory
 import io.reactivex.rxjava3.subjects.PublishSubject
 import java.lang.Exception
 import java.net.URI
+import java.security.PrivateKey
+import java.security.PublicKey
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -71,9 +74,11 @@ class MessagingService : Service() {
         }
     }
 
-    fun send(text: String?, conversation: ConversationModel) {
-        val message = ConversationMessage("text", Utils.getSavedAuthToken(applicationContext), text, conversation.otherUser.id, conversation.id )
-        ws.sendText(message.toJsonString().toString())
+    fun send(text: String, conversation: ConversationModel, pbKey: PublicKey) {
+        val encryptedText = Encryption.encryptMessage(text, pbKey)
+        val message = ConversationMessage("text", Utils.getSavedAuthToken(applicationContext), encryptedText, conversation.otherUser.id, conversation.id )
+        val messageString = message.toJsonString().toString()
+        ws.sendText(messageString)
     }
 
     fun sendInit() {

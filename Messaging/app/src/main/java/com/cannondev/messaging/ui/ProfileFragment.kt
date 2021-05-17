@@ -29,7 +29,7 @@ class ProfileFragment : Fragment() {
     lateinit var details: EditText
     lateinit var photo: ImageView
     lateinit var user: UserModel
-    lateinit var fileName: String
+    private var fileName: String? = null
     lateinit var ctx: Context
     private lateinit var appBarConfiguration: AppBarConfiguration
 
