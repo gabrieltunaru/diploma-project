@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import auth from './auth'
-import {decoded, getUserId} from './general'
+import {decoded, getUser, getUserId} from './general'
 import userModel, {IUser} from '../models/user'
 import logger from '../logger'
 import ConversationModel, {IConversation} from '../models/conversations'
@@ -13,7 +13,7 @@ function parseConversation(conn, userId) {
   return {
     _id: conn._id,
     isPrivate: conn.isPrivate,
-    otherUser: conn.users.find(x => String(x._id) !== userId)
+    otherUser: conn.isPrivate ? null : conn.users.find(x => String(x._id) !== userId)
   }
 }
 
@@ -36,6 +36,18 @@ router.post('/getAll', [auth], async (req, res, next) => {
   next()
 })
 
+async function createConversation(currentUser, newContact) {
+  const newConversation = new ConversationModel()
+  newConversation.users.push(currentUser)
+  newConversation.users.push(newContact)
+  await newConversation.save()
+  currentUser.conversations.push(newConversation)
+  newContact.conversations.push(newConversation)
+  await currentUser.save()
+  await newContact.save()
+  return newConversation
+}
+
 router.post('/add', [auth], async (req, res, next) => {
   const userId = getUserId(req.headers)
   const {contactPseudoId} = req.body
@@ -54,14 +66,7 @@ router.post('/add', [auth], async (req, res, next) => {
         return
       }
     }
-    const newConversation = new ConversationModel()
-    newConversation.users.push(currentUser)
-    newConversation.users.push(newContact)
-    await newConversation.save()
-    currentUser.conversations.push(newConversation)
-    newContact.conversations.push(newConversation)
-    await currentUser.save()
-    await newContact.save()
+    const newConversation = await createConversation(currentUser, newContact)
     res.json(parseConversation(newConversation, userId))
     logger.debug(`Add contact: ${newContact}`)
   } else {
@@ -69,6 +74,15 @@ router.post('/add', [auth], async (req, res, next) => {
     res.status(404).send('User not found')
   }
   next()
+})
+
+
+router.post('/addPrivate', auth, async (req, res) => {
+  const currentUser = await getUser(req.headers)
+  const {privateId} = req.body
+  const newContact = await userModel.findOne({privateId})
+  const newConversation = await createConversation(currentUser, newContact)
+  res.json(parseConversation(newConversation, currentUser._id))
 })
 
 export default router

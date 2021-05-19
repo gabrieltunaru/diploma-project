@@ -32,6 +32,7 @@ class UserHttp(val authToken: String) {
                 return headers
             }
         }
+        queue.add(req)
         return req
     }
 
@@ -40,6 +41,22 @@ class UserHttp(val authToken: String) {
             "${Constants.BACKEND_URL}/profile/setProfile",
             profile.toJsonString(),
             Response.Listener {},
+            Queue.defaultErrorListener
+        ) {
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                headers["x-auth-token"] = authToken
+                return headers
+            }
+        }
+        queue.add(req)
+    }
+
+    fun regeneratePrivateId(listener: Response.Listener<String>) {
+        val req = object : StringRequest(
+            Method.PUT,
+            "${Constants.BACKEND_URL}/user/privateId",
+            listener,
             Queue.defaultErrorListener
         ) {
             override fun getHeaders(): MutableMap<String, String> {

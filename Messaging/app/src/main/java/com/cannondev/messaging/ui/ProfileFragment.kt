@@ -34,15 +34,13 @@ class ProfileFragment : Fragment() {
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     fun getCurrentUser() {
-        val ctx = activity?.applicationContext!!
-        val req = userHttp.getCurrentUser(ctx, Response.Listener { data ->
+        val ctx = requireContext()
+        userHttp.getCurrentUser(ctx, Response.Listener { data ->
             user = Gson().fromJson(data, UserModel::class.java)
             username.setText(user.profile?.username)
             details.setText(user.profile?.details)
             ImageHandler.loadPhoto(ctx, user.profile?.photo, photo)
         })
-
-        rq.add(req)
     }
 
     fun setProfile(view: View) {

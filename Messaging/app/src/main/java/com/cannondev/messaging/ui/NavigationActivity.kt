@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar
 import com.cannondev.messaging.MessagingService
 import com.cannondev.messaging.R
 import android.util.Log
+import androidx.navigation.Navigation
 
 open class NavigationActivity : AppCompatActivity() {
 
@@ -82,9 +83,12 @@ open class NavigationActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_settings -> {
-                Log.d(this::class.simpleName, "should send init?")
+            R.id.action_reconnect -> {
                 mService.sendInit()
+                true
+            }
+            R.id.action_settings -> {
+                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.action_global_settingsFragment)
                 true
             }
             else -> {

@@ -8,12 +8,14 @@ interface IProfile extends Document {
   details: string
   photo: string
 }
+
 export interface IUser extends Document {
   email: string
   password: string
   profile: IProfile,
   conversations: [IConversation],
   pbKey: string,
+  privateId: string,
   generateAuthToken: () => string
 }
 
@@ -38,6 +40,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
     unique: true,
   },
   pbKey: String,
+  privateId: {
+    type: String,
+    unique: true
+  },
   profile: {
     username: {
       type: String,
@@ -52,7 +58,14 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
   conversations: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Conversation',
-  }]
+  }],
+  privateConversations: {
+    type: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Conversation',
+    }],
+    default: []
+  }
 })
 
 UserSchema.methods.generateAuthToken = function () {

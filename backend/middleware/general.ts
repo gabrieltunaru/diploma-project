@@ -4,6 +4,7 @@ import express from "express";
 import path from "path";
 import config from "config";
 import jwt from "jsonwebtoken";
+import User from '../models/user'
 
 const router = express.Router()
 const decoded = (headers) => {
@@ -14,6 +15,11 @@ const decoded = (headers) => {
 const getUserId = headers => {
     const user = decoded(headers)
     return user._id
+}
+
+const getUser = (headers) => {
+    const userId = getUserId(headers)
+    return User.findById(userId)
 }
 
 const getUserIdFromTokenString = token => {
@@ -75,7 +81,8 @@ export {
     getImage,
     uploadPhoto,
     getUserId,
-    getUserIdFromTokenString
+    getUserIdFromTokenString,
+    getUser
 }
 
 export default router

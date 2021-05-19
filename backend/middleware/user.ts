@@ -2,8 +2,7 @@ import express from 'express'
 import User, {IDecodedUser} from '../models/user'
 import bcrypt from 'bcrypt'
 import auth from './auth'
-import {getUserId} from './general'
-import logger from '../logger'
+import {getUser} from './general'
 
 const router = express.Router()
 
@@ -71,12 +70,40 @@ router.get('/getCurrent', auth, async (req, res) => {
     res.send(user)
 })
 
+function randomString(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let res = ''
+    for (let i=0; i<6; i++) {
+        res += chars[Math.floor(Math.random() * chars.length)]
+    }
+    return res
+}
+
+
+async function createPrivateId(): Promise<string> {
+    const ids = await User.find({}).select('privateId')
+    let privateId = randomString()
+    while (privateId in ids) {
+        privateId = randomString()
+    }
+    return privateId
+}
+
+router.put('/privateId', auth, async (req, res) => {
+    const user = await getUser(req.headers)
+    user.privateId = await createPrivateId()
+    await user.save()
+    res.json({privateId: user.privateId})
+})
+
 router.post('/register', async (req, res) => {
     const { pbKey , email, password } = req.body
+    const privateId = await createPrivateId()
     const user = new User({
         password,
         email,
         pbKey,
+        privateId,
         profile: {},
         contacts: []
     })

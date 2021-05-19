@@ -45,5 +45,23 @@
             android:name="conversation"
             app:argType="com.cannondev.messaging.models.ConversationModel" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.cannondev.messaging.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment"
+        app:enterAnim="@anim/fragment_fade_enter"
+        app:exitAnim="@anim/fragment_fade_exit"
+        app:popEnterAnim="@anim/fragment_fade_enter"
+        app:popExitAnim="@anim/fragment_fade_exit" />
+    <fragment
+        android:id="@+id/privateConversationsFragment"
+        android:name="com.cannondev.messaging.ui.PrivateConversationsFragment"
+        android:label="fragment_private_conversations"
+        tools:layout="@layout/fragment_contacts" />
+
 
 </navigation>
