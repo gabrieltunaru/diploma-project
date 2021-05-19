@@ -16,7 +16,13 @@ object ContactsHttp {
         Queue.jsonRequest("contacts/add", contact, ctx, resListener)
     }
 
-    fun getContacts(listener: Response.Listener<JSONObject>, ctx: Context) {
-        Queue.jsonRequest("contacts/getAll", null, ctx, listener)
+    fun addPrivateConversation(contactPseudoId: String, ctx: Context, resListener: Response.Listener<JSONObject>) {
+        val contact = Contact(contactPseudoId)
+        Queue.jsonRequest("contacts/addPrivate", contact, ctx, resListener)
+    }
+
+    fun getContacts(listener: Response.Listener<JSONObject>, ctx: Context, arePrivate: Boolean = false) {
+        val path = if (arePrivate) "contacts/getAll/true" else "contacts/getAll/false"
+        Queue.jsonRequest(path, null, ctx, listener)
     }
 }

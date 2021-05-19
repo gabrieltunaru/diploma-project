@@ -32,8 +32,6 @@ class ContactFragment : Fragment() {
             conversationJson = it.getString(ARG_PARAM1)
             conversation = Gson().fromJson(conversationJson, ConversationModel::class.java)
             contact = conversation.otherUser
-
-            Log.d(this::class.java.simpleName, "created fragment: ${conversation.toString()}")
         }
     }
 
@@ -55,13 +53,16 @@ class ContactFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val contactContainer = view.findViewById<ConstraintLayout>(R.id.contact_container)
-        contactContainer.setOnClickListener{
+        contactContainer.setOnClickListener {
             goToConversation()
         }
     }
 
     fun goToConversation() {
-        val action = ContactsFragmentDirections.actionNavContactsToNavConversation(conversation)
+        val action =
+            if (conversation.isPrivate) PrivateConversationsFragmentDirections.actionNavPrivateConversationsToNavConversation(
+                conversation
+            ) else ContactsFragmentDirections.actionNavContactsToNavConversation(conversation)
         NavHostFragment.findNavController(this).navigate(action)
     }
 

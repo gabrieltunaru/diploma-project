@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="com.cannondev.messaging.ui.AuthFragment"
-        android:label="@string/menu_home"
+        android:label="@string/menu_auth"
         tools:layout="@layout/fragment_auth" >
         <action
             android:id="@+id/action_nav_home_to_nav_gallery"
@@ -48,7 +48,7 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.cannondev.messaging.ui.SettingsFragment"
-        android:label="fragment_settings"
+        android:label="Settings"
         tools:layout="@layout/fragment_settings" />
     <action
         android:id="@+id/action_global_settingsFragment"
@@ -58,10 +58,18 @@
         app:popEnterAnim="@anim/fragment_fade_enter"
         app:popExitAnim="@anim/fragment_fade_exit" />
     <fragment
-        android:id="@+id/privateConversationsFragment"
+        android:id="@+id/nav_private_conversations"
         android:name="com.cannondev.messaging.ui.PrivateConversationsFragment"
-        android:label="fragment_private_conversations"
-        tools:layout="@layout/fragment_contacts" />
+        android:label="Private conversations"
+        tools:layout="@layout/fragment_contacts" >
+        <action
+            android:id="@+id/action_nav_private_conversations_to_nav_conversation"
+            app:destination="@id/nav_conversation"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_fade_exit" />
+    </fragment>
 
 
 </navigation>

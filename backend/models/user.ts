@@ -55,17 +55,13 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
       type: String,
     },
   },
-  conversations: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Conversation',
-  }],
-  privateConversations: {
+  conversations: {
     type: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Conversation',
     }],
     default: []
-  }
+  },
 })
 
 UserSchema.methods.generateAuthToken = function () {

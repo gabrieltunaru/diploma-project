@@ -7,13 +7,17 @@ import ConversationModel, {IConversation} from '../models/conversations'
 
 const router = Router()
 
-function parseConversation(conn, userId) {
-  const foundId = conn.users.find(x => String(x._id) !== userId)._id
-  console.log("ids: ", foundId !== userId, foundId, userId, typeof foundId, typeof userId)
+function parseConversation(conn: IConversation, userId) {
+  const otherUser = conn.users.find(x => String(x._id) !== String(userId))
+  if (conn.isPrivate) {
+    otherUser.profile.details=null
+    otherUser.profile.photo=null
+    otherUser.profile.username=otherUser.privateId
+  }
   return {
     _id: conn._id,
     isPrivate: conn.isPrivate,
-    otherUser: conn.isPrivate ? null : conn.users.find(x => String(x._id) !== userId)
+    otherUser
   }
 }
 
@@ -25,19 +29,21 @@ function parseConversations(conversations, userId) {
   return conns
 }
 
-router.post('/getAll', [auth], async (req, res, next) => {
+router.post('/getAll/:arePrivate', [auth], async (req, res, next) => {
   const userId = decoded(req.headers)._id
+  const arePrivate = req.param('arePrivate', '') === 'true'
   const {conversations} = await userModel
     .findById(userId)
     .populate({path: 'conversations', populate: 'users'})
     .select('conversations')
-  const conns = parseConversations(conversations, userId)
+  const filteredConversations = conversations.filter(con => con.isPrivate === arePrivate)
+  const conns = parseConversations(filteredConversations, userId)
   res.json({conversations: conns})
   next()
 })
 
-async function createConversation(currentUser, newContact) {
-  const newConversation = new ConversationModel()
+async function createConversation(currentUser: IUser, newContact: IUser, isPrivate = false) {
+  const newConversation = new ConversationModel({isPrivate})
   newConversation.users.push(currentUser)
   newConversation.users.push(newContact)
   await newConversation.save()
@@ -79,9 +85,13 @@ router.post('/add', [auth], async (req, res, next) => {
 
 router.post('/addPrivate', auth, async (req, res) => {
   const currentUser = await getUser(req.headers)
-  const {privateId} = req.body
+  const privateId = req.body.contactPseudoId
   const newContact = await userModel.findOne({privateId})
-  const newConversation = await createConversation(currentUser, newContact)
+  if (!newContact) {
+    res.sendStatus(404)
+    return
+  }
+  const newConversation = await createConversation(currentUser, newContact, true)
   res.json(parseConversation(newConversation, currentUser._id))
 })
 

@@ -1,7 +1,6 @@
 package com.cannondev.messaging.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,24 +13,22 @@ import com.cannondev.messaging.models.ConversationModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
+
 class PrivateConversationsFragment : Fragment() {
     lateinit var contactPseudoId: EditText
     lateinit var searchContactsButton: AppCompatImageButton
     lateinit var conversations: List<ConversationModel>
 
-    fun getContacts(savedInstanceState: Bundle?) {
+    fun getConversations(savedInstanceState: Bundle?) {
         ContactsHttp.getContacts({ data ->
-            Log.d(this::class.simpleName, "got from backend: $data")
-
             val itemType = object : TypeToken<List<ConversationModel>>() {}.type
             conversations = Gson().fromJson(data.getJSONArray("conversations").toString(), itemType)
-            Log.d(this::class.simpleName, "parsed: $conversations")
             if (savedInstanceState == null) {
                 for (contact in conversations) {
                     addContact(contact)
                 }
             }
-        }, requireContext())
+        }, requireContext(), true)
     }
     fun addContact(contact: ConversationModel) {
         childFragmentManager
@@ -52,12 +49,12 @@ class PrivateConversationsFragment : Fragment() {
         contactPseudoId.hint = "private id"
         searchContactsButton = root.findViewById(R.id.searchContactsBtn)
         searchContactsButton.setOnClickListener {
-            ContactsHttp.addContact(contactPseudoId.text.toString(), requireContext()) {
+            ContactsHttp.addPrivateConversation(contactPseudoId.text.toString(), requireContext()) {
                 val contact = Gson().fromJson(it.toString(), ConversationModel::class.java)
                 addContact(contact)
             }
         }
-        getContacts(savedInstanceState)
+        getConversations(savedInstanceState)
         return root
     }
 
