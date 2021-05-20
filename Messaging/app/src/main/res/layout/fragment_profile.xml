@@ -23,40 +23,31 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/baseline_account_circle_black_24dp" />
 
-    <EditText
-        android:id="@+id/profileDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="36dp"
-        android:ems="10"
-        android:hint="Software Engineer"
-        android:inputType="textPersonName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileUsername" />
-
     <TextView
         android:id="@+id/UsernameLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
+        android:layout_marginStart="72dp"
         android:layout_marginTop="34dp"
-        android:labelFor="@id/profileUsername"
+        android:labelFor="@id/profileDisplayName"
         android:text="Username"
-        app:layout_constraintBottom_toTopOf="@+id/profileUsername"
+        app:layout_constraintBottom_toTopOf="@+id/profileDisplayName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileAvatar"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/DetailsLabel"
+        android:id="@+id/usernameLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginBottom="8dp"
-        android:text="Details"
-        app:layout_constraintBottom_toTopOf="@+id/profileDetails"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="34dp"
+        android:labelFor="@id/profileDisplayName"
+        android:text="Display name"
+        app:layout_constraintBottom_toTopOf="@+id/profileDisplayName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileAvatar"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textView"
@@ -69,16 +60,50 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/profileUsername"
+        android:id="@+id/profileDisplayName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="132dp"
         android:ems="10"
-        android:hint="john.doe"
+        android:hint="John Doe"
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileAvatar" />
+
+    <EditText
+        android:id="@+id/profileUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="52dp"
+        android:ems="10"
+        android:hint="jdoe"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileAvatar" />
+
+    <TextView
+        android:id="@+id/DetailsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginBottom="4dp"
+        android:text="Details"
+        app:layout_constraintBottom_toTopOf="@+id/profileDetails"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/profileDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:hint="Software Engineer"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileDisplayName" />
 
     <Button
         android:id="@+id/saveProfile"

@@ -4,7 +4,7 @@ import mongoose, {Document, Schema} from 'mongoose'
 import {IConversation} from './conversations'
 
 interface IProfile extends Document {
-  username: string
+  displayName: string
   details: string
   photo: string
 }
@@ -45,6 +45,9 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
     unique: true
   },
   profile: {
+    displayName: {
+      type: String,
+    },
     username: {
       type: String,
     },

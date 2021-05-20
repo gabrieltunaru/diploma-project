@@ -25,6 +25,7 @@ class ProfileFragment : Fragment() {
     val rq = Queue.getQueue()
     lateinit var userHttp: UserHttp
     lateinit var authToken: String
+    lateinit var displayName: EditText
     lateinit var username: EditText
     lateinit var details: EditText
     lateinit var photo: ImageView
@@ -37,6 +38,7 @@ class ProfileFragment : Fragment() {
         val ctx = requireContext()
         userHttp.getCurrentUser(ctx, Response.Listener { data ->
             user = Gson().fromJson(data, UserModel::class.java)
+            displayName.setText(user.profile?.displayName)
             username.setText(user.profile?.username)
             details.setText(user.profile?.details)
             ImageHandler.loadPhoto(ctx, user.profile?.photo, photo)
@@ -45,6 +47,7 @@ class ProfileFragment : Fragment() {
 
     fun setProfile(view: View) {
         val profile = ProfileModel(
+            displayName = displayName.text.toString(),
             username = username.text.toString(),
             details = details.text.toString(),
             id = null,
@@ -80,6 +83,7 @@ class ProfileFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_profile, null) as ViewGroup
 
+        displayName = root.findViewById(R.id.profileDisplayName)
         username = root.findViewById(R.id.profileUsername)
         details = root.findViewById(R.id.profileDetails)
         photo = root.findViewById(R.id.profileAvatar)

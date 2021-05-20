@@ -1,7 +1,6 @@
 package com.cannondev.messaging.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -43,7 +42,7 @@ class ContactFragment : Fragment() {
         username = root.findViewById(R.id.contact_username)
         details = root.findViewById(R.id.contact_details)
         photo = root.findViewById(R.id.contact_avatar)
-        username.text = contact.profile?.username
+        username.text = contact.profile?.displayName
         details.text = contact.profile?.details
         ImageHandler.loadPhoto(requireContext(), contact.profile?.photo, photo)
         return root

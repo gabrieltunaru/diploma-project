@@ -12,7 +12,7 @@ function parseConversation(conn: IConversation, userId) {
   if (conn.isPrivate) {
     otherUser.profile.details=null
     otherUser.profile.photo=null
-    otherUser.profile.username=otherUser.privateId
+    otherUser.profile.displayName=otherUser.privateId
   }
   return {
     _id: conn._id,
