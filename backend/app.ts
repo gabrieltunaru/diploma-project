@@ -7,6 +7,7 @@ import logger from './logger'
 import * as http from 'http'
 import * as WebSocket from 'ws'
 import websocket from './websocket'
+import {errorHandler} from './utils'
 
 if (!config.get('privateKey')) {
   console.error('FATAL ERROR: private key not defined')
@@ -19,6 +20,7 @@ db.init()
 const app = express()
 app.use(bodyParser.json())
 app.use('/', routes)
+app.use(errorHandler)
 const port = 3000
 const server = http.createServer(app)
 const wss = new WebSocket.Server({server})

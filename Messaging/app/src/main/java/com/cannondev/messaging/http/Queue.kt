@@ -23,13 +23,13 @@ object Queue {
             Toast.makeText(
                 MyApplication.applicationContext(),
                 "Can't connect to server",
-                Toast.LENGTH_SHORT
+                Toast.LENGTH_LONG
             ).show()
         } else {
             val errData = e.networkResponse.data
             val errMessage =
                 if (errData != null && errData.isNotEmpty()) String(errData) else "Error"
-            Toast.makeText(MyApplication.applicationContext(), errMessage, Toast.LENGTH_SHORT)
+            Toast.makeText(MyApplication.applicationContext(), errMessage, Toast.LENGTH_LONG)
                 .show()
             Log.e("Queue", errMessage)
         }
@@ -50,10 +50,7 @@ object Queue {
         val req = JsonObjectRequest(
             method, url + path, data,
             responseHandler,
-            Response.ErrorListener { e ->
-                Toast.makeText(MyApplication.applicationContext(), e.toString(), Toast.LENGTH_SHORT)
-                    .show()
-            })
+            defaultErrorListener)
         queue.add(req)
     }
 

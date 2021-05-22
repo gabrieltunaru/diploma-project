@@ -3,6 +3,9 @@ import User, {IDecodedUser} from '../models/user'
 import bcrypt from 'bcrypt'
 import auth from './auth'
 import {getUser} from './general'
+import logger from '../logger'
+import mongoose from 'mongoose'
+import {asyncHandler, getErrorMessage} from '../utils'
 
 const router = express.Router()
 
@@ -35,8 +38,6 @@ async function login(req, res, dbUser) {
             }
         })
         .catch((err) => {
-            console.error(err)
-            console.error(req.body)
             res.status(500).send(err)
         })
 }
@@ -95,8 +96,8 @@ router.put('/privateId', auth, async (req, res) => {
     res.json({privateId: user.privateId})
 })
 
-router.post('/register', async (req, res) => {
-    const { pbKey , email, password } = req.body
+router.post('/register', asyncHandler(async (req, res) => {
+    const {pbKey, email, password} = req.body
     const privateId = await createPrivateId()
     const user = new User({
         password,
@@ -110,6 +111,6 @@ router.post('/register', async (req, res) => {
     await user.save()
     const token = user.generateAuthToken()
     res.header('x-auth-token', token).json({key: token})
-})
+}))
 
 export default router
