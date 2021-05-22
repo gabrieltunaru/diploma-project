@@ -6,6 +6,7 @@ import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.cannondev.messaging.Constants.BACKEND_URL
@@ -17,7 +18,8 @@ import org.json.JSONObject
 object Queue {
     private lateinit var queue: RequestQueue
     private val url = BACKEND_URL
-    val defaultErrorListener = Response.ErrorListener { e ->
+
+    fun handleNetworkError(e: VolleyError) {
         if (e.networkResponse == null) {
             e.printStackTrace()
             Toast.makeText(
@@ -35,6 +37,8 @@ object Queue {
         }
     }
 
+    val defaultErrorListener = Response.ErrorListener { handleNetworkError(it) }
+
 
     fun init(ctx: Context) {
         queue = Volley.newRequestQueue(ctx)
@@ -45,21 +49,33 @@ object Queue {
         path: String,
         data: JSONObject,
         method: Int,
-        responseHandler: Response.Listener<JSONObject>
+        responseHandler: Response.Listener<JSONObject>,
+        errorListener: Response.ErrorListener
     ) {
         val req = JsonObjectRequest(
             method, url + path, data,
             responseHandler,
-            defaultErrorListener)
+            errorListener
+        )
         queue.add(req)
     }
 
-    fun post(path: String, data: JSONObject, listener: Response.Listener<JSONObject>) {
-        request(path, data, Request.Method.POST, listener)
+    fun post(
+        path: String,
+        data: JSONObject,
+        listener: Response.Listener<JSONObject>,
+        errorListener: Response.ErrorListener = defaultErrorListener
+    ) {
+        request(path, data, Request.Method.POST, listener, errorListener)
     }
 
-    fun get(path: String, data: JSONObject, listener: Response.Listener<JSONObject>) {
-        request(path, data, Request.Method.GET, listener)
+    fun get(
+        path: String,
+        data: JSONObject,
+        listener: Response.Listener<JSONObject>,
+        errorListener: Response.ErrorListener = defaultErrorListener
+    ) {
+        request(path, data, Request.Method.GET, listener, errorListener)
     }
 
     fun jsonRequest(

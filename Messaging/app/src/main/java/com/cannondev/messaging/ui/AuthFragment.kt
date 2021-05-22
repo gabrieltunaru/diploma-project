@@ -50,7 +50,7 @@ class AuthFragment : Fragment() {
             val kp = Encryption.generate()!!
             data.pbKey = Base64.encodeToString(kp.public.encoded, Base64.DEFAULT)
             val jsonData = data.toJson()
-            Queue.post("/user/register", jsonData) { r ->
+            Queue.post("/user/register", jsonData, { r ->
                 try {
                     Toast.makeText(activity, "Account created!", Toast.LENGTH_SHORT).show()
                     val authResponse = Gson().fromJson(r.toString(), AuthResponse::class.java)
@@ -58,11 +58,9 @@ class AuthFragment : Fragment() {
                     goToProfile()
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Log.e(TAG, e.localizedMessage)
-                    Log.e(TAG, "response: $r")
                     Toast.makeText(activity, "There has been an error", Toast.LENGTH_SHORT).show()
                 }
-            }
+            })
         }
 
         builder.setNegativeButton(android.R.string.cancel) { dialog, which ->
@@ -91,18 +89,18 @@ class AuthFragment : Fragment() {
         Queue.post("/user/auth", jsonData, Response.Listener { r ->
             try {
                 val authResponse = Gson().fromJson(r.toString(), AuthResponse::class.java)
-                if (authResponse?.notFound == true) {
-                    showDialog(data)
-                } else {
-                    Toast.makeText(activity, "Logged in!", Toast.LENGTH_SHORT).show()
-                    saveToken(authResponse.key)
-                    goToProfile()
-                }
+                Toast.makeText(activity, "Logged in!", Toast.LENGTH_SHORT).show()
+                saveToken(authResponse.key)
+                goToProfile()
             } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e(TAG, e.localizedMessage)
-                Log.e(TAG, "response: $r")
                 Toast.makeText(activity, "There has been an error", Toast.LENGTH_SHORT).show()
+            }
+        }, { e ->
+            e.printStackTrace()
+            if (e.networkResponse.statusCode == 404) {
+                showDialog(data)
+            } else {
+                Queue.handleNetworkError(e)
             }
         })
     }

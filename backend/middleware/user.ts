@@ -11,7 +11,6 @@ const router = express.Router()
 
 interface AuthResponse {
     key: string
-    notFound: boolean
 }
 
 declare global {
@@ -30,8 +29,7 @@ async function login(req, res, dbUser) {
         .then((equal) => {
             if (equal) {
                 const token = dbUser.generateAuthToken()
-                const resp: AuthResponse = {notFound: false, key: token}
-                console.log(resp)
+                const resp: AuthResponse = {key: token}
                 res.header('x-auth-token', token).json(resp)
             } else {
                 res.status(400).send('Wrong password')
@@ -42,18 +40,13 @@ async function login(req, res, dbUser) {
         })
 }
 
-async function sendNotFound(req, res) {
-    const resp: AuthResponse = {notFound: true, key: null}
-    res.json(resp)
-}
-
 router.post('/auth', async (req, res) => {
     try {
         const user = await User.findOne({email: req.body.email})
         if (user) {
             await login(req, res, user)
         } else {
-            await sendNotFound(req, res)
+            res.sendStatus(404)
         }
     } catch (err) {
         console.error(err)
