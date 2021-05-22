@@ -24,14 +24,11 @@ class MyApplication : Application() {
             .also { intent ->
                 startService(intent)
             }
-
     }
 
     override fun onCreate() {
         super.onCreate()
-        val context = MyApplication.applicationContext()
-//        Security.insertProviderAt(Conscrypt.newProvider(), 1);
-        Queue.init(context)
+        Queue.init(applicationContext)
         startMessagingService()
     }
 }

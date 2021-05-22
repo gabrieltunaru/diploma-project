@@ -26,8 +26,7 @@ async function login(req, res, dbUser) {
         .compare(reqUser.password, dbUser.password)
         .then((equal) => {
             if (equal) {
-                const user = dbUser
-                const token = user.generateAuthToken()
+                const token = dbUser.generateAuthToken()
                 const resp: AuthResponse = {notFound: false, key: token}
                 console.log(resp)
                 res.header('x-auth-token', token).json(resp)

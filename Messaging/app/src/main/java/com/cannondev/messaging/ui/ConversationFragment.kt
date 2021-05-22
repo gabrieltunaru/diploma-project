@@ -11,8 +11,6 @@ import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.LAYOUT_DIRECTION_RTL
-import android.view.View.TEXT_ALIGNMENT_VIEW_END
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -118,7 +116,7 @@ class ConversationFragment : Fragment() {
             .beginTransaction()
             .add(
                 R.id.conversation_contact_container,
-                ContactFragment.newInstance(conversation.toJsonString().toString())
+                ContactFragment.newInstance(conversation.toJson().toString())
             )
             .commit()
     }

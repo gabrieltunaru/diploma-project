@@ -45,18 +45,10 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
     unique: true
   },
   profile: {
-    displayName: {
-      type: String,
-    },
-    username: {
-      type: String,
-    },
-    details: {
-      type: String,
-    },
-    photo: {
-      type: String,
-    },
+    displayName: String,
+    username: {type: String, unique: true},
+    details: String,
+    photo: String,
   },
   conversations: {
     type: [{

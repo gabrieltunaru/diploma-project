@@ -22,7 +22,6 @@ import com.google.gson.Gson
 
 
 class ProfileFragment : Fragment() {
-    val rq = Queue.getQueue()
     lateinit var userHttp: UserHttp
     lateinit var authToken: String
     lateinit var displayName: EditText

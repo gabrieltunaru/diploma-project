@@ -18,7 +18,6 @@ import com.cannondev.messaging.R
 import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.models.AuthResponse
 import com.cannondev.messaging.models.LoginInfo
-import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.Encryption
 import com.google.gson.Gson
 import org.json.JSONObject
@@ -50,7 +49,7 @@ class AuthFragment : Fragment() {
         builder.setPositiveButton(android.R.string.ok) { _, _ ->
             val kp = Encryption.generate()!!
             data.pbKey = Base64.encodeToString(kp.public.encoded, Base64.DEFAULT)
-            val jsonData = data.toJsonString()
+            val jsonData = data.toJson()
             Queue.post("/user/register", jsonData) { r ->
                 try {
                     Toast.makeText(activity, "Account created!", Toast.LENGTH_SHORT).show()

@@ -13,15 +13,13 @@ if (!config.get('privateKey')) {
   process.exit(1)
 }
 
-const app = express()
-
-app.use(bodyParser.json())
 
 db.init()
-const port = 3000
 
+const app = express()
+app.use(bodyParser.json())
 app.use('/', routes)
-
+const port = 3000
 const server = http.createServer(app)
 const wss = new WebSocket.Server({server})
 

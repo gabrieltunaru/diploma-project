@@ -19,11 +19,9 @@ import com.neovisionaries.ws.client.WebSocketFactory
 import io.reactivex.rxjava3.subjects.PublishSubject
 import java.lang.Exception
 import java.net.URI
-import java.security.PrivateKey
 import java.security.PublicKey
 import java.util.*
 import java.util.concurrent.Executors
-import java.util.concurrent.Future
 
 class MessagingService : Service() {
     private lateinit var ws: WebSocket
@@ -77,13 +75,13 @@ class MessagingService : Service() {
     fun send(text: String, conversation: ConversationModel, pbKey: PublicKey) {
         val encryptedText = Encryption.encryptMessage(text, pbKey)
         val message = ConversationMessage("text", Utils.getSavedAuthToken(applicationContext), encryptedText, conversation.otherUser.id, conversation.id )
-        val messageString = message.toJsonString().toString()
+        val messageString = message.toJson().toString()
         ws.sendText(messageString)
     }
 
     fun sendInit() {
         val data = Message("init", Utils.getSavedAuthToken(applicationContext), null, null)
-        ws.sendText(data.toJsonString().toString())
+        ws.sendText(data.toJson().toString())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

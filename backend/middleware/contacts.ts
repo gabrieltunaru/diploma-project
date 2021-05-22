@@ -10,7 +10,7 @@ const router = Router()
 function parseConversation(conn: IConversation, userId) {
   const otherUser = conn.users.find(x => String(x._id) !== String(userId))
   if (conn.isPrivate) {
-    otherUser.profile.details=null
+    otherUser.profile.details='Anonymous user'
     otherUser.profile.photo=null
     otherUser.profile.displayName=otherUser.privateId
   }

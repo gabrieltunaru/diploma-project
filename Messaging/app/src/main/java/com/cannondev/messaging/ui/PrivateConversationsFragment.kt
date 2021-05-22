@@ -35,7 +35,7 @@ class PrivateConversationsFragment : Fragment() {
             .beginTransaction()
             .add(
                 R.id.contacts_scroll_layout,
-                ContactFragment.newInstance(contact.toJsonString().toString())
+                ContactFragment.newInstance(contact.toJson().toString())
             )
             .commit()
     }
