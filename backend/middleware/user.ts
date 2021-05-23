@@ -41,17 +41,12 @@ async function login(req, res, dbUser) {
 }
 
 router.post('/auth', async (req, res) => {
-    try {
         const user = await User.findOne({email: req.body.email})
         if (user) {
             await login(req, res, user)
         } else {
             res.sendStatus(404)
         }
-    } catch (err) {
-        console.error(err)
-        res.status(500).send(err)
-    }
 })
 
 router.get('/getCurrent', auth, async (req, res) => {

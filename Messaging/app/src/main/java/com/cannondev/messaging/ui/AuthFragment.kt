@@ -17,8 +17,10 @@ import com.android.volley.Response
 import com.cannondev.messaging.R
 import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.models.AuthResponse
+import com.cannondev.messaging.models.Gsonable
 import com.cannondev.messaging.models.LoginInfo
 import com.cannondev.messaging.utils.Encryption
+import com.cannondev.messaging.utils.Utils
 import com.google.gson.Gson
 import org.json.JSONObject
 
@@ -42,25 +44,24 @@ class AuthFragment : Fragment() {
         return root
     }
 
-    private fun showDialog(data: LoginInfo) {
+    private fun register(data: LoginInfo) {
+        val kp = Encryption.generate()!!
+        data.pbKey = Base64.encodeToString(kp.public.encoded, Base64.DEFAULT)
+        val jsonData = data.toJson()
+        Queue.post("/user/register", jsonData, { r ->
+            Toast.makeText(activity, "Account created!", Toast.LENGTH_SHORT).show()
+            val authResponse = Gson().fromJson(r.toString(), AuthResponse::class.java)
+            saveToken(authResponse.key)
+            goToProfile()
+        })
+    }
+
+    private fun confirm(data: LoginInfo) {
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("No account found for this email")
         builder.setMessage("Do you want to create a new account?")
         builder.setPositiveButton(android.R.string.ok) { _, _ ->
-            val kp = Encryption.generate()!!
-            data.pbKey = Base64.encodeToString(kp.public.encoded, Base64.DEFAULT)
-            val jsonData = data.toJson()
-            Queue.post("/user/register", jsonData, { r ->
-                try {
-                    Toast.makeText(activity, "Account created!", Toast.LENGTH_SHORT).show()
-                    val authResponse = Gson().fromJson(r.toString(), AuthResponse::class.java)
-                    saveToken(authResponse.key)
-                    goToProfile()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(activity, "There has been an error", Toast.LENGTH_SHORT).show()
-                }
-            })
+            register(data)
         }
 
         builder.setNegativeButton(android.R.string.cancel) { dialog, which ->
@@ -70,20 +71,15 @@ class AuthFragment : Fragment() {
 
     }
 
-    fun saveToken(token: String) {
-        val sharedPref = activity?.getSharedPreferences(
-            getString(R.string.shared_prefs_file),
-            Context.MODE_PRIVATE
-        )
-        sharedPref?.edit()?.putString("authToken", token)?.apply()
-        sharedPref?.getString("authToken", "nope")?.let { Log.d("s-a salvat cheia", it) }
+    private fun saveToken(token: String) {
+        Utils.saveToPrefs(this.requireContext(), "authToken", token)
     }
 
-    fun goToProfile() {
+    private fun goToProfile() {
         NavHostFragment.findNavController(this).navigate(R.id.action_nav_home_to_nav_gallery)
     }
 
-    fun login(view: View) {
+    private fun login(view: View) {
         val data = LoginInfo(email.text.toString(), password.text.toString(), null)
         val jsonData = JSONObject(Gson().toJson(data))
         Queue.post("/user/auth", jsonData, Response.Listener { r ->
@@ -96,9 +92,8 @@ class AuthFragment : Fragment() {
                 Toast.makeText(activity, "There has been an error", Toast.LENGTH_SHORT).show()
             }
         }, { e ->
-            e.printStackTrace()
             if (e.networkResponse.statusCode == 404) {
-                showDialog(data)
+                confirm(data)
             } else {
                 Queue.handleNetworkError(e)
             }

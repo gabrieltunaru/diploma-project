@@ -12,13 +12,6 @@ import javax.crypto.Cipher
 object Encryption {
     val TAG = javaClass.simpleName
 
-    fun init(context: Context) {
-        val mainKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        Utils.saveToPrefs(context, "mainKey", mainKey.toString())
-    }
-
     fun generate(): KeyPair? {
         val kpg: KeyPairGenerator = KeyPairGenerator.getInstance(
             KeyProperties.KEY_ALGORITHM_RSA,
