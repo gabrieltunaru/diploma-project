@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
@@ -59,8 +60,12 @@ class ConversationFragment : Fragment() {
             if (message.conversationId == conversation.id) {
                 activity?.runOnUiThread {
                     Log.d(TAG, "message got to conv: $message")
-                    val text = Encryption.decryptMessage(message.text ?: "", pvKey!!)
-                    addMessage(text, false)
+                    if (Encryption.verify(message.text ?: "", pbKey)) {
+                        val text = Encryption.decryptMessage(message.text ?: "", pvKey!!)
+                        addMessage(text, false)
+                    } else {
+                        Toast.makeText(context, "Message not properly signed", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -106,7 +111,7 @@ class ConversationFragment : Fragment() {
 
     private fun sendText(text: String?) {
         if (mBound) {
-            mService.send(text ?: "", conversation, pbKey)
+            mService.send(text ?: "", conversation, pbKey, pvKey!!)
             addMessage(text, true)
         }
     }

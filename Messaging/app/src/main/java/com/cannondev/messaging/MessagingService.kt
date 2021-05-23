@@ -19,6 +19,7 @@ import com.neovisionaries.ws.client.WebSocketFactory
 import io.reactivex.rxjava3.subjects.PublishSubject
 import java.lang.Exception
 import java.net.URI
+import java.security.PrivateKey
 import java.security.PublicKey
 import java.util.*
 import java.util.concurrent.Executors
@@ -72,9 +73,10 @@ class MessagingService : Service() {
         }
     }
 
-    fun send(text: String, conversation: ConversationModel, pbKey: PublicKey) {
+    fun send(text: String, conversation: ConversationModel, pbKey: PublicKey, pvKey: PrivateKey) {
         val encryptedText = Encryption.encryptMessage(text, pbKey)
-        val message = ConversationMessage("text", Utils.getSavedAuthToken(applicationContext), encryptedText, conversation.otherUser.id, conversation.id )
+        val digest = Encryption.sign(text, pvKey)
+        val message = ConversationMessage("text", Utils.getSavedAuthToken(applicationContext), encryptedText, conversation.otherUser.id, conversation.id, digest)
         val messageString = message.toJson().toString()
         ws.sendText(messageString)
     }

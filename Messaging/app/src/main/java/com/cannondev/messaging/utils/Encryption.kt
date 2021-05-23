@@ -1,11 +1,10 @@
 package com.cannondev.messaging.utils
 
-import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
-import androidx.security.crypto.MasterKey
+import java.nio.charset.StandardCharsets
 import java.security.*
 import javax.crypto.Cipher
 
@@ -19,9 +18,10 @@ object Encryption {
         )
         val parameterSpec: KeyGenParameterSpec = KeyGenParameterSpec.Builder(
             "rsa",
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT or KeyProperties.PURPOSE_SIGN or KeyProperties.PURPOSE_VERIFY or KeyProperties.PURPOSE_WRAP_KEY
         ).run {
             setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
+            setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1)
             setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
             build()
         }
@@ -57,6 +57,22 @@ object Encryption {
         cipher.init(Cipher.DECRYPT_MODE, pvKey)
         val enc = cipher.doFinal(decoded)
         return String(enc)
+    }
+
+    fun sign(text: String, pvKey: PrivateKey): String {
+        val signature: ByteArray = Signature.getInstance("SHA256withRSA").run {
+            initSign(pvKey)
+            update(text.toByteArray())
+            sign()
+        }
+        return Base64.encodeToString(signature, Base64.DEFAULT)
+    }
+
+    fun verify(text: String, pbKey: PublicKey): Boolean {
+        val sig = Signature.getInstance("SHA512withRSA")
+        sig.initVerify(pbKey)
+        sig.update(text.toByteArray())
+        return sig.verify(Base64.decode(text, Base64.DEFAULT))
     }
 
 }
