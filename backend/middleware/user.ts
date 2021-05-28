@@ -1,5 +1,5 @@
 import express from 'express'
-import User, {IDecodedUser} from '../models/user'
+import UserModel, {IDecodedUser} from '../models/user'
 import bcrypt from 'bcrypt'
 import auth from './auth'
 import {getUser} from './general'
@@ -36,21 +36,21 @@ async function login(req, res, dbUser) {
             }
         })
         .catch((err) => {
-            res.status(500).send(err)
+            res.status(400).send(err)
         })
 }
 
 router.post('/auth', async (req, res) => {
-        const user = await User.findOne({email: req.body.email})
-        if (user) {
-            await login(req, res, user)
-        } else {
-            res.sendStatus(404)
-        }
+    const user = await UserModel.findOne({email: req.body.email})
+    if (user) {
+        await login(req, res, user)
+    } else {
+        res.sendStatus(404)
+    }
 })
 
 router.get('/getCurrent', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password').populate({
+    const user = await UserModel.findById(req.user._id).select('-password').populate({
         path: 'profile',
         model: 'Profile',
     })
@@ -69,7 +69,7 @@ function randomString(): string {
 
 
 async function createPrivateId(): Promise<string> {
-    const ids = await User.find({}).select('privateId')
+    const ids = await UserModel.find({}).select('privateId')
     let privateId = randomString()
     while (privateId in ids) {
         privateId = randomString()
@@ -87,18 +87,18 @@ router.put('/privateId', auth, async (req, res) => {
 router.post('/register', asyncHandler(async (req, res) => {
     const {pbKey, email, password} = req.body
     const privateId = await createPrivateId()
-    const user = new User({
-        password,
-        email,
-        pbKey,
-        privateId,
-        profile: {},
-        contacts: []
-    })
-    user.password = await bcrypt.hash(user.password, 10)
-    await user.save()
-    const token = user.generateAuthToken()
-    res.header('x-auth-token', token).json({key: token})
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = new UserModel({
+          password: hashedPassword,
+          email,
+          pbKey,
+          privateId,
+          profile: {},
+          contacts: []
+      })
+      await user.save()
+      const token = user.generateAuthToken()
+      res.header('x-auth-token', token).json({key: token})
 }))
 
 export default router

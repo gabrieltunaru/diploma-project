@@ -1,10 +1,8 @@
 package com.cannondev.messaging.ui
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +15,6 @@ import com.android.volley.Response
 import com.cannondev.messaging.R
 import com.cannondev.messaging.http.Queue
 import com.cannondev.messaging.models.AuthResponse
-import com.cannondev.messaging.models.Gsonable
 import com.cannondev.messaging.models.LoginInfo
 import com.cannondev.messaging.utils.Encryption
 import com.cannondev.messaging.utils.Utils
@@ -27,8 +24,8 @@ import org.json.JSONObject
 
 class AuthFragment : Fragment() {
     private val TAG = "AuthActivity"
-    lateinit var email: EditText
-    lateinit var password: EditText
+    lateinit var emailField: EditText
+    lateinit var passwordField: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,16 +33,15 @@ class AuthFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_auth, null) as ViewGroup
-
-        email = root.findViewById(R.id.editTextTextEmailAddress)
-        password = root.findViewById(R.id.editTextNumberPassword)
+        emailField = root.findViewById(R.id.editTextTextEmailAddress)
+        passwordField = root.findViewById(R.id.editTextPassword)
         val btn = root.findViewById<Button>(R.id.loginButton)
-        btn.setOnClickListener { login(it) }
+        btn.setOnClickListener { auth(it) }
         return root
     }
 
     private fun register(data: LoginInfo) {
-        val kp = Encryption.generate()!!
+        val kp = Encryption.generateKeys()!!
         data.pbKey = Base64.encodeToString(kp.public.encoded, Base64.DEFAULT)
         val jsonData = data.toJson()
         Queue.post("/user/register", jsonData, { r ->
@@ -64,8 +60,7 @@ class AuthFragment : Fragment() {
             register(data)
         }
 
-        builder.setNegativeButton(android.R.string.cancel) { dialog, which ->
-        }
+        builder.setNegativeButton(android.R.string.cancel) { _, _ -> }
 
         builder.show()
 
@@ -79,10 +74,10 @@ class AuthFragment : Fragment() {
         NavHostFragment.findNavController(this).navigate(R.id.action_nav_home_to_nav_gallery)
     }
 
-    private fun login(view: View) {
-        val data = LoginInfo(email.text.toString(), password.text.toString(), null)
-        val jsonData = JSONObject(Gson().toJson(data))
-        Queue.post("/user/auth", jsonData, Response.Listener { r ->
+    private fun auth(view: View) {
+        val data = LoginInfo(emailField.text.toString(), passwordField.text.toString(), null)
+        val jsonData = data.toJson()
+        Queue.post("/user/auth", jsonData, { r ->
             try {
                 val authResponse = Gson().fromJson(r.toString(), AuthResponse::class.java)
                 Toast.makeText(activity, "Logged in!", Toast.LENGTH_SHORT).show()

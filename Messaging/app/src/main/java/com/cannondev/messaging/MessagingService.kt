@@ -66,7 +66,7 @@ class MessagingService : Service() {
 
         try {
             future.get()
-            sendInit()
+            initializeConnection()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -79,7 +79,7 @@ class MessagingService : Service() {
         ws.sendText(messageString)
     }
 
-    fun sendInit() {
+    fun initializeConnection() {
         val data = Message("init", Utils.getSavedAuthToken(applicationContext), null, null)
         ws.sendText(data.toJson().toString())
     }

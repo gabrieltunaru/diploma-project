@@ -8,7 +8,7 @@ import upload from "./upload"
 
 const router = express.Router()
 
-router.post('/setProfile', auth, async (req, res) => {
+router.put('/setProfile', auth, async (req, res) => {
     try {
         console.log('got profile', req.body)
         const profile = req.body
@@ -22,20 +22,6 @@ router.post('/setProfile', auth, async (req, res) => {
         res.status(500).json(err)
     }
 })
-
-const getProfile = async (req, res) => {
-    try {
-        const userId = generalMid.decoded(req.headers)._id
-        const user = await User.findById(userId).populate({
-            path: 'profile',
-            model: 'Profile',
-        })
-        res.json(user.profile)
-    } catch (err) {
-        console.error(err)
-        res.status(500).send(err)
-    }
-}
 
 router.post('/setPhoto', [auth, upload], async (req, res, next) => {
     try {
@@ -67,7 +53,4 @@ router.get('/image/:filename', async (req, res) => {
     })
 })
 
-export {
-    getProfile,
-}
 export default router

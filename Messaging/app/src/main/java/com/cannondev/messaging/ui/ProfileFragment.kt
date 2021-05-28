@@ -35,13 +35,13 @@ class ProfileFragment : Fragment() {
 
     fun getCurrentUser() {
         val ctx = requireContext()
-        userHttp.getCurrentUser(ctx, Response.Listener { data ->
+        userHttp.getCurrentUser(ctx) { data ->
             user = Gson().fromJson(data, UserModel::class.java)
-            displayName.setText(user.profile?.displayName)
-            username.setText(user.profile?.username)
-            details.setText(user.profile?.details)
-            ImageHandler.loadPhoto(ctx, user.profile?.photo, photo)
-        })
+            displayName.setText(user.profile.displayName)
+            username.setText(user.profile.username)
+            details.setText(user.profile.details)
+            ImageHandler.loadPhoto(ctx, user.profile.photo, photo)
+        }
     }
 
     fun setProfile(view: View) {

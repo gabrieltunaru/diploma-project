@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.cannondev.messaging.MessagingService
 import com.cannondev.messaging.R
-import android.util.Log
 import androidx.navigation.Navigation
 
 open class NavigationActivity : AppCompatActivity() {
@@ -47,15 +46,12 @@ open class NavigationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_navigation)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_contacts, R.id.nav_private_conversations
+                R.id.nav_home, R.id.nav_profile, R.id.nav_contacts, R.id.nav_private_conversations
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -84,7 +80,7 @@ open class NavigationActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_reconnect -> {
-                mService.sendInit()
+                mService.initializeConnection()
                 true
             }
             R.id.action_settings -> {
@@ -95,7 +91,6 @@ open class NavigationActivity : AppCompatActivity() {
                 super.onOptionsItemSelected(item)
             }
         }
-
     }
 
     override fun onSupportNavigateUp(): Boolean {

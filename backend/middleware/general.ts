@@ -31,27 +31,9 @@ function getFile(filename) {
     return __dirname + '/../assets/images/' + filename
 }
 
-function addOne(schema) {
-    return async (req, res) => {
-        try {
-            console.log(req.body)
-            const model = new schema(req.body)
-            await model.save()
-            res.sendStatus(201)
-        } catch (err) {
-            res.status(400).send(err)
-        }
-    }
-}
-
 const getImage = async (req, res) => {
     try {
         const {filename} = req.params
-        console.log(filename)
-        // fs.readFile(getFile(filename), function (err, data) {
-        //   if (err) throw err
-        //   res.send(data)
-        // })
         res.sendFile(path.resolve(getFile(filename)))
     } catch (err) {
         console.error(err)
@@ -77,7 +59,6 @@ router.get('/image/:filename', getImage)
 export {
     decoded,
     getFile,
-    addOne,
     getImage,
     uploadPhoto,
     getUserId,

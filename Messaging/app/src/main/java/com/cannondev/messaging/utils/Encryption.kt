@@ -12,7 +12,7 @@ import javax.crypto.Cipher
 object Encryption {
     val TAG = javaClass.simpleName
 
-    fun generate(): KeyPair? {
+    fun generateKeys(): KeyPair? {
         val kpg: KeyPairGenerator = KeyPairGenerator.getInstance(
             KeyProperties.KEY_ALGORITHM_RSA,
             "AndroidKeyStore"
