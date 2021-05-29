@@ -60,8 +60,8 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
 })
 
 UserSchema.path('email').validate(email => {
-  const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-  return emailRegex.test(email);
+  const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/
+  return emailRegex.test(email)
 }, 'The provided email is not valid.')
 
 UserSchema.methods.generateAuthToken = function () {

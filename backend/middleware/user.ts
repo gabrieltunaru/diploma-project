@@ -93,7 +93,7 @@ router.post('/register', asyncHandler(async (req, res) => {
           email,
           pbKey,
           privateId,
-          profile: {},
+          profile: {displayName: 'User'},
           contacts: []
       })
       await user.save()

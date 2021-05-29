@@ -14,55 +14,23 @@ import com.cannondev.messaging.models.ConversationModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class ContactsFragment : Fragment() {
-    lateinit var contactPseudoId: EditText
-    lateinit var searchContactsButton: AppCompatImageButton
-    lateinit var conversations: List<ConversationModel>
-
-    fun getContacts(savedInstanceState: Bundle?) {
+class ContactsFragment : ConversationsFragment() {
+    override fun getConversations(savedInstanceState: Bundle?) {
         ContactsHttp.getContacts({ data ->
             val itemType = object : TypeToken<List<ConversationModel>>() {}.type
             conversations = Gson().fromJson(data.getJSONArray("conversations").toString(), itemType)
             if (savedInstanceState == null) {
                 for (contact in conversations) {
-                    addContact(contact)
+                    addContactFragment(contact)
                 }
             }
         }, requireContext())
     }
-    fun addContact(contact: ConversationModel) {
-        childFragmentManager
-            .beginTransaction()
-            .add(
-                R.id.contacts_scroll_layout,
-                ContactFragment.newInstance(contact.toJson().toString())
-            )
-            .commit()
-    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.fragment_contacts, container, false)
-        contactPseudoId = root.findViewById(R.id.pseudoId)
-        searchContactsButton = root.findViewById(R.id.searchContactsBtn)
-        searchContactsButton.setOnClickListener {
-            ContactsHttp.addContact(contactPseudoId.text.toString(), requireContext()) {
-                val contact = Gson().fromJson(it.toString(), ConversationModel::class.java)
-                addContact(contact)
-            }
+    override fun addContactOnServer() {
+        ContactsHttp.addContact(contactPseudoId.text.toString(), requireContext()) {
+            val contact = Gson().fromJson(it.toString(), ConversationModel::class.java)
+            addContactFragment(contact)
         }
-        getContacts(savedInstanceState)
-        return root
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ContactsFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
     }
 }

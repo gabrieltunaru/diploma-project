@@ -14,56 +14,38 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 
-class PrivateConversationsFragment : Fragment() {
-    lateinit var contactPseudoId: EditText
-    lateinit var searchContactsButton: AppCompatImageButton
-    lateinit var conversations: List<ConversationModel>
+class PrivateConversationsFragment : ConversationsFragment() {
 
-    fun getConversations(savedInstanceState: Bundle?) {
+    override fun getConversations(savedInstanceState: Bundle?) {
         ContactsHttp.getContacts({ data ->
             val itemType = object : TypeToken<List<ConversationModel>>() {}.type
             conversations = Gson().fromJson(data.getJSONArray("conversations").toString(), itemType)
             if (savedInstanceState == null) {
                 for (contact in conversations) {
-                    addContact(contact)
+                    addContactFragment(contact)
                 }
             }
         }, requireContext(), true)
     }
-    fun addContact(contact: ConversationModel) {
-        childFragmentManager
-            .beginTransaction()
-            .add(
-                R.id.contacts_scroll_layout,
-                ContactFragment.newInstance(contact.toJson().toString())
-            )
-            .commit()
+
+    override fun addContactOnServer() {
+        ContactsHttp.addPrivateConversation(contactPseudoId.text.toString(), requireContext()) {
+            val contact = Gson().fromJson(it.toString(), ConversationModel::class.java)
+            addContactFragment(contact)
+        }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_contacts, container, false)
-        contactPseudoId = root.findViewById(R.id.pseudoId)
-        contactPseudoId.hint = "private id"
-        searchContactsButton = root.findViewById(R.id.searchContactsBtn)
-        searchContactsButton.setOnClickListener {
-            ContactsHttp.addPrivateConversation(contactPseudoId.text.toString(), requireContext()) {
-                val contact = Gson().fromJson(it.toString(), ConversationModel::class.java)
-                addContact(contact)
-            }
+        val root = super.onCreateView(inflater, container, savedInstanceState)
+        if (root != null) {
+            contactPseudoId = root.findViewById(R.id.pseudoId)
+            contactPseudoId.hint = "private id"
         }
-        getConversations(savedInstanceState)
         return root
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ContactsFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
 }
