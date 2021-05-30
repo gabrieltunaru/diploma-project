@@ -26,12 +26,17 @@ abstract class ConversationsFragment  : Fragment() {
             .beginTransaction()
             .add(
                 R.id.contacts_scroll_layout,
-                ContactFragment.newInstance(contact.toJson().toString())
+                ContactFragment.newInstance(contact)
             )
             .commit()
     }
 
     abstract fun addContactOnServer()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        getConversations(savedInstanceState)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +46,11 @@ abstract class ConversationsFragment  : Fragment() {
         contactPseudoId = root.findViewById(R.id.pseudoId)
         searchContactsButton = root.findViewById(R.id.searchContactsBtn)
         searchContactsButton.setOnClickListener { addContactOnServer() }
-        getConversations(savedInstanceState)
         return root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("initialized", true)
     }
 }

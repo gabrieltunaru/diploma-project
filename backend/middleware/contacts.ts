@@ -7,12 +7,12 @@ import ConversationModel, {IConversation} from '../models/conversations'
 
 const router = Router()
 
-function parseConversation(conn: IConversation, userId) {
+function specifyOtherUser(conn: IConversation, userId) {
   const otherUser = conn.users.find(x => String(x._id) !== String(userId))
   if (conn.isPrivate) {
-    otherUser.profile.details='Anonymous user'
-    otherUser.profile.photo=null
-    otherUser.profile.displayName=otherUser.privateId
+    otherUser.profile.details = 'Anonymous user'
+    otherUser.profile.photo = null
+    otherUser.profile.displayName = otherUser.privateId
   }
   return {
     _id: conn._id,
@@ -24,14 +24,14 @@ function parseConversation(conn: IConversation, userId) {
 function parseConversations(conversations, userId) {
   const conns = []
   conversations.forEach(conn => {
-    conns.push(parseConversation(conn, userId))
+    conns.push(specifyOtherUser(conn, userId))
   })
   return conns
 }
 
 router.post('/getAll/:arePrivate', [auth], async (req, res, next) => {
   const userId = decoded(req.headers)._id
-  const arePrivate = req.param('arePrivate', '') === 'true'
+  const arePrivate = req.params.arePrivate === 'true'
   const {conversations} = await userModel
     .findById(userId)
     .populate({path: 'conversations', populate: 'users'})
@@ -54,8 +54,18 @@ async function createConversation(currentUser: IUser, newContact: IUser, isPriva
   return newConversation
 }
 
+async function isContactAlreadyAdded(currentUser: IUser, newContactId, isPrivate): Promise<boolean> {
+  for (const conversation of currentUser.conversations) {
+    if (conversation.users.includes(newContactId) && conversation.isPrivate === isPrivate) {
+      return true
+    }
+  }
+  return false
+}
+
 router.post('/add', [auth], async (req, res, next) => {
   const userId = getUserId(req.headers)
+  const currentUser = await userModel.findById(userId).populate('conversations')
   const {contactPseudoId} = req.body
   const newContact = await userModel.findOne({
     "$or": [
@@ -64,19 +74,14 @@ router.post('/add', [auth], async (req, res, next) => {
     ]
   })
   if (newContact) {
-    const currentUser = await userModel.findById(userId).populate('conversations')
-    for (const conversation of currentUser.conversations) {
-      if (conversation.users.includes(newContact._id)) {
-        res.status(400).send('Cannot add a contact already added')
-        next()
-        return
-      }
+    if (await isContactAlreadyAdded(currentUser, newContact._id, false)) {
+      res.status(400).send('Cannot add a contact already added')
+      next()
+      return
     }
     const newConversation = await createConversation(currentUser, newContact)
-    res.json(parseConversation(newConversation, userId))
-    logger.debug(`Add contact: ${newContact}`)
+    res.json(specifyOtherUser(newConversation, userId))
   } else {
-    logger.debug('Add contact: 404')
     res.status(404).send('User not found')
   }
   next()
@@ -92,7 +97,7 @@ router.post('/addPrivate', auth, async (req, res) => {
     return
   }
   const newConversation = await createConversation(currentUser, newContact, true)
-  res.json(parseConversation(newConversation, currentUser._id))
+  res.json(specifyOtherUser(newConversation, currentUser._id))
 })
 
 export default router

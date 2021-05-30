@@ -116,7 +116,7 @@ class ConversationFragment : Fragment() {
             .beginTransaction()
             .add(
                 R.id.conversation_contact_container,
-                ContactFragment.newInstance(conversation.toJson().toString())
+                ContactFragment.newInstance(conversation)
             )
             .commit()
     }

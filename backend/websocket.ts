@@ -14,11 +14,7 @@ const connectedUsers = {}
 
 function handleInitMessage(data: ConversationMessage, ws) {
   const userId = getUserIdFromTokenString(data.token)
-  if (connectedUsers) {
-    connectedUsers[userId] = ws
-  } else {
-    connectedUsers[userId] = ws
-  }
+  connectedUsers[userId] = ws
 }
 
 function handleTextMessage(data: ConversationMessage) {
@@ -34,7 +30,6 @@ function handleTextMessage(data: ConversationMessage) {
 
 function handleMessage(text, ws) {
   const data = JSON.parse(text)
-  logger.debug(`received: ${text}`)
   if (data.type === 'init') {
     handleInitMessage(data, ws)
   } else if (data.type === 'text') {

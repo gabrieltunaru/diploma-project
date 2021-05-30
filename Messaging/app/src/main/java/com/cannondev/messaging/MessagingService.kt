@@ -43,6 +43,10 @@ class MessagingService : Service() {
         Log.d(this::class.simpleName, "received ws message: $message")
     }
 
+    fun initializeConnection() {
+        val data = Message("init", Utils.getSavedAuthToken(applicationContext), null, null)
+        ws.sendText(data.toJson().toString())
+    }
     fun connect() {
         val uri = URI("ws://10.0.2.2:3000")
         val factory = WebSocketFactory();
@@ -54,16 +58,12 @@ class MessagingService : Service() {
             override fun onTextMessage(websocket: WebSocket?, text: String?) {
                 handleMessage(text)
             }
-
             override fun onError(websocket: WebSocket?, cause: WebSocketException?) {
                 cause?.printStackTrace()
             }
         })
-
         val es = Executors.newSingleThreadExecutor();
-
         val future = ws.connect(es);
-
         try {
             future.get()
             initializeConnection()
@@ -79,10 +79,6 @@ class MessagingService : Service() {
         ws.sendText(messageString)
     }
 
-    fun initializeConnection() {
-        val data = Message("init", Utils.getSavedAuthToken(applicationContext), null, null)
-        ws.sendText(data.toJson().toString())
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         connect()

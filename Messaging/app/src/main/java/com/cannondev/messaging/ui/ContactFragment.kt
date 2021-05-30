@@ -20,7 +20,6 @@ private const val ARG_PARAM1 = "param1"
 class ContactFragment : Fragment() {
     private lateinit var conversation: ConversationModel
     private lateinit var contact: UserModel
-    private var conversationJson: String? = null
     lateinit var username: TextView
     lateinit var details: TextView
     lateinit var photo: ImageView
@@ -28,8 +27,7 @@ class ContactFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            conversationJson = it.getString(ARG_PARAM1)
-            conversation = Gson().fromJson(conversationJson, ConversationModel::class.java)
+            conversation = it.getParcelable(ARG_PARAM1)!!
             contact = conversation.otherUser
         }
     }
@@ -66,10 +64,10 @@ class ContactFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(param1: String) =
+        fun newInstance(param1: ConversationModel) =
             ContactFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
+                    putParcelable(ARG_PARAM1, param1)
                 }
             }
     }
