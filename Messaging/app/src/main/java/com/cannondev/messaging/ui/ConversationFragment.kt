@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
@@ -46,6 +47,7 @@ class ConversationFragment : Fragment() {
             val binder = service as MessagingService.LocalBinder
             mService = binder.getService()
             mService.messagePublisher.subscribe { handleMessage(it) }
+            mService.initializeConnection()
             mBound = true
         }
 
@@ -69,7 +71,7 @@ class ConversationFragment : Fragment() {
     }
 
     private fun addMessage(text: String?, isSender: Boolean) {
-        val textView = MessageView(requireContext())
+        val textView = TextView(requireContext())
         textView.text = text
         val params: LinearLayout.LayoutParams =
             LinearLayout.LayoutParams(

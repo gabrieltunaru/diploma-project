@@ -25,6 +25,7 @@ import java.util.concurrent.Executors
 
 class MessagingService : Service() {
     private lateinit var ws: WebSocket
+    private val WSS_URL = "ws://10.0.2.2:3000"
     val messagePublisher = PublishSubject.create<ConversationMessage>()
 
     private val binder = LocalBinder()
@@ -48,7 +49,7 @@ class MessagingService : Service() {
         ws.sendText(data.toJson().toString())
     }
     fun connect() {
-        val uri = URI("ws://10.0.2.2:3000")
+        val uri = URI(WSS_URL)
         val factory = WebSocketFactory();
         val context = NaiveSSLContext.getInstance("TLS")
         factory.sslContext = context
@@ -84,4 +85,5 @@ class MessagingService : Service() {
         connect()
         return START_STICKY
     }
+
 }

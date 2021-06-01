@@ -1,6 +1,9 @@
 import WebSocket from 'ws'
 import logger from './logger'
-import {getUserIdFromTokenString} from './middleware/general'
+import {getUserFromToken, getUserIdFromTokenString} from './middleware/general'
+import UserModel from './models/user'
+import ConversationModel from './models/conversations'
+import {ObjectId, Types} from 'mongoose'
 
 interface ConversationMessage {
   type: string,
@@ -17,13 +20,18 @@ function handleInitMessage(data: ConversationMessage, ws) {
   connectedUsers[userId] = ws
 }
 
-function handleTextMessage(data: ConversationMessage) {
+async function handleTextMessage(data: ConversationMessage) {
+  const currentUser = await getUserFromToken(data.token)
+  const conv = await ConversationModel.findById(data.conversationId).populate('users')
+  const userIds: string[] = conv.users.map(x=>String(x._id))
+  if (!userIds.includes(currentUser._id) ||  !userIds.includes(data.otherUserId)) {
+    return
+  }
   const otherUserWs = connectedUsers[data.otherUserId]
   if (!otherUserWs) {
     console.log("user ", data.otherUserId, " not connected", connectedUsers)
     // handle not connected
   } else {
-    logger.debug(`ws: ${otherUserWs}, data: ${data}`)
     otherUserWs.send(JSON.stringify(data))
   }
 }
@@ -33,7 +41,7 @@ function handleMessage(text, ws) {
   if (data.type === 'init') {
     handleInitMessage(data, ws)
   } else if (data.type === 'text') {
-    handleTextMessage(data)
+    handleTextMessage(data).then(() => {return null}).catch(err => console.error(err))
   }
 }
 

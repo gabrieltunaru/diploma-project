@@ -4,7 +4,7 @@ import express from "express";
 import path from "path";
 import config from "config";
 import jwt from "jsonwebtoken";
-import User from '../models/user'
+import UserModel from '../models/user'
 
 const router = express.Router()
 const decoded = (headers) => {
@@ -19,12 +19,17 @@ const getUserId = headers => {
 
 const getUser = (headers) => {
     const userId = getUserId(headers)
-    return User.findById(userId)
+    return UserModel.findById(userId)
 }
 
 const getUserIdFromTokenString = token => {
     const decodedUser = jwt.verify(token, config.get('privateKey'))
     return decodedUser._id
+}
+
+const getUserFromToken = async token => {
+    const userId = getUserIdFromTokenString(token)
+    return UserModel.findById(userId)
 }
 
 function getFile(filename) {
@@ -63,7 +68,8 @@ export {
     uploadPhoto,
     getUserId,
     getUserIdFromTokenString,
-    getUser
+    getUser,
+    getUserFromToken
 }
 
 export default router
