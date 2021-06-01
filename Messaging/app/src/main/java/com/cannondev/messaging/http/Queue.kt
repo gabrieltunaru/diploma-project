@@ -85,7 +85,7 @@ object Queue {
         responseListener: Response.Listener<JSONObject>?
     ) {
         val authToken = Utils.getSavedAuthToken(ctx)
-        val payload = data?.toJson() ?: JSONObject()
+        val payload = data?.toJson()
         val req = object : JsonObjectRequest(
             "${BACKEND_URL}/${path}",
             payload,

@@ -1,16 +1,16 @@
 import WebSocket from 'ws'
 import logger from './logger'
 import {getUserFromToken, getUserIdFromTokenString} from './middleware/general'
-import UserModel from './models/user'
 import ConversationModel from './models/conversations'
-import {ObjectId, Types} from 'mongoose'
+import MessageModel from './models/messages'
 
 interface ConversationMessage {
   type: string,
   token: string,
   text?: string,
   otherUserId: string,
-  conversationId: string
+  conversationId: string,
+  timestamp: string
 }
 
 const connectedUsers = {}
@@ -20,20 +20,31 @@ function handleInitMessage(data: ConversationMessage, ws) {
   connectedUsers[userId] = ws
 }
 
+function saveMessage(data: ConversationMessage) {
+  const message = new MessageModel({...data, senderId: getUserIdFromTokenString(data.token)})
+  message.save().catch(err => logger.error(err))
+}
+
 async function handleTextMessage(data: ConversationMessage) {
   const currentUser = await getUserFromToken(data.token)
   const conv = await ConversationModel.findById(data.conversationId).populate('users')
-  const userIds: string[] = conv.users.map(x=>String(x._id))
-  if (!userIds.includes(currentUser._id) ||  !userIds.includes(data.otherUserId)) {
+  const userIds: string[] = conv.users.map(x => String(x._id))
+  if (!userIds.includes(currentUser._id) || !userIds.includes(data.otherUserId)) {
     return
   }
+  saveMessage(data)
   const otherUserWs = connectedUsers[data.otherUserId]
-  if (!otherUserWs) {
-    console.log("user ", data.otherUserId, " not connected", connectedUsers)
-    // handle not connected
-  } else {
+  if (otherUserWs) {
     otherUserWs.send(JSON.stringify(data))
   }
+}
+
+function handleAckMessage(data: ConversationMessage) {
+  MessageModel.deleteOne({
+    otherUserId: data.otherUserId,
+    timestamp: data.timestamp,
+    conversationId: data.conversationId
+  })
 }
 
 function handleMessage(text, ws) {
@@ -41,7 +52,11 @@ function handleMessage(text, ws) {
   if (data.type === 'init') {
     handleInitMessage(data, ws)
   } else if (data.type === 'text') {
-    handleTextMessage(data).then(() => {return null}).catch(err => console.error(err))
+    handleTextMessage(data).then(() => {
+      return null
+    }).catch(err => console.error(err))
+  } else if (data.type === 'ack') {
+    handleAckMessage(data)
   }
 }
 

@@ -1,7 +1,7 @@
 import {Router} from 'express'
 import auth from './auth'
 import {decoded, getUser, getUserId} from './general'
-import userModel, {IUser} from '../models/user'
+import userModel, {IUser} from '../models/userModel'
 import logger from '../logger'
 import ConversationModel, {IConversation} from '../models/conversations'
 
@@ -29,7 +29,7 @@ function parseConversations(conversations, userId) {
   return conns
 }
 
-router.post('/getAll/:arePrivate', [auth], async (req, res, next) => {
+router.get('/getAll/:arePrivate', [auth], async (req, res, next) => {
   const userId = decoded(req.headers)._id
   const arePrivate = req.params.arePrivate === 'true'
   const {conversations} = await userModel

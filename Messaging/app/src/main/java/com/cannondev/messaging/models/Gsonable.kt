@@ -8,4 +8,8 @@ abstract class Gsonable: Parcelable {
     fun toJson(): JSONObject {
         return JSONObject(Gson().toJson(this))
     }
+
+    fun toJsonString(): String {
+        return this.toJson().toString()
+    }
 }

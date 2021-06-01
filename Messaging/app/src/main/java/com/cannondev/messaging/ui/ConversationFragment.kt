@@ -24,6 +24,7 @@ import com.cannondev.messaging.models.ConversationMessage
 import com.cannondev.messaging.models.ConversationModel
 import com.cannondev.messaging.models.UserModel
 import com.cannondev.messaging.utils.Encryption
+import com.cannondev.messaging.utils.MessageDbHelper
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.PublicKey
@@ -130,12 +131,23 @@ class ConversationFragment : Fragment() {
             ctx.bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
         pvKey = Encryption.getPrivateKey()
+        populateOldMessages()
+
     }
 
     override fun onStop() {
         super.onStop()
         requireContext().unbindService(connection)
         mBound = false
+    }
+
+    private fun populateOldMessages() {
+        val dbHelper = MessageDbHelper(requireContext())
+        for (message in dbHelper.getMessages(conversation.id)) {
+            Log.d(TAG, "$message")
+            val text = Encryption.decryptMessage(message.text!!, pvKey!!)
+            addMessage(text, message.isSender!!)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

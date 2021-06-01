@@ -1,11 +1,9 @@
 package com.cannondev.messaging.utils
 
-import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
-import androidx.security.crypto.MasterKey
 import java.security.*
 import javax.crypto.Cipher
 
@@ -41,6 +39,14 @@ object Encryption {
             return null
         }
         return entry.privateKey
+    }
+
+
+    fun getPublicKey(): PublicKey {
+        val ks: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply {
+            load(null)
+        }
+        return ks.getCertificate("rsa").publicKey
     }
 
     fun encryptMessage(text: String, publicKey: PublicKey): String {

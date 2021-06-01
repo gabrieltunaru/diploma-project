@@ -4,7 +4,7 @@ import express from "express";
 import path from "path";
 import config from "config";
 import jwt from "jsonwebtoken";
-import UserModel from '../models/user'
+import UserModel from '../models/userModel'
 
 const router = express.Router()
 const decoded = (headers) => {

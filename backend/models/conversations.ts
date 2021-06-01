@@ -1,5 +1,5 @@
 import mongoose, {Document, Schema, SchemaDefinition} from 'mongoose'
-import {IUser} from './user'
+import {IUser} from './userModel'
 
 export interface IConversation extends Document {
   otherUser?: IUser

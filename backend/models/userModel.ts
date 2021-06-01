@@ -74,6 +74,6 @@ UserSchema.methods.generateAuthToken = function () {
   )
 }
 
-const User = mongoose.model<IUser>('User', UserSchema)
+const UserModel = mongoose.model<IUser>('User', UserSchema)
 
-export default User
+export default UserModel

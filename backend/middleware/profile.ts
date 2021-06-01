@@ -1,7 +1,7 @@
-import userModel from '../models/user'
+import userModel from '../models/userModel'
 import * as generalMid from './general'
 import fs from 'fs'
-import User from '../models/user'
+import UserModel from '../models/userModel'
 import express from 'express'
 import auth from "./auth"
 import upload from "./upload"
@@ -13,7 +13,7 @@ router.put('/setProfile', auth, async (req, res) => {
         console.log('got profile', req.body)
         const profile = req.body
         const userId = generalMid.decoded(req.headers)._id
-        const user = await User.findById(userId)
+        const user = await UserModel.findById(userId)
         user.profile = profile
         await user.save()
         res.status(200).send({})

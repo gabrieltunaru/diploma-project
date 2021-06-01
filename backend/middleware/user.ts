@@ -1,5 +1,5 @@
 import express from 'express'
-import UserModel, {IDecodedUser} from '../models/user'
+import UserModel, {IDecodedUser} from '../models/userModel'
 import bcrypt from 'bcrypt'
 import auth from './auth'
 import {getUser} from './general'

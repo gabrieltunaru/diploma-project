@@ -1,4 +1,4 @@
-import { IDecodedUser } from './models/user'
+import { IDecodedUser } from './models/userModel'
 
 declare global {
   namespace Express {
