@@ -16,7 +16,9 @@ export interface IUser extends Document {
   conversations: [IConversation],
   pbKey: string,
   privateId: string,
-  generateAuthToken: () => string
+  generateAuthToken: () => string,
+  activationToken: string,
+  isActivated: boolean
 }
 
 export interface IDecodedUser {
@@ -57,6 +59,8 @@ const UserSchema: Schema<IUser> = new mongoose.Schema<IUser>({
     }],
     default: []
   },
+  activationToken: String,
+  isActivated: Boolean
 })
 
 UserSchema.path('email').validate(email => {

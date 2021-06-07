@@ -1,11 +1,12 @@
 import express from 'express'
-import UserModel, {IDecodedUser} from '../models/userModel'
+import UserModel, {IDecodedUser, IUser} from '../models/userModel'
 import bcrypt from 'bcrypt'
 import auth from './auth'
 import {getUser} from './general'
 import logger from '../logger'
 import mongoose from 'mongoose'
 import {asyncHandler, getErrorMessage} from '../utils'
+import sendMail from '../mail'
 
 const router = express.Router()
 
@@ -50,18 +51,31 @@ router.post('/auth', async (req, res) => {
 })
 
 router.get('/getCurrent', auth, async (req, res) => {
-    const user = await UserModel.findById(req.user._id).select('-password').populate({
-        path: 'profile',
-        model: 'Profile',
-    })
-    console.log(user)
-    res.send(user)
+  const user = await UserModel.findById(req.user._id).select('-password').populate({
+    path: 'profile',
+    model: 'Profile',
+  })
+  console.log(user)
+  res.send(user)
 })
 
-function randomString(): string {
+
+router.get('/activate/:token', async (req, res) => {
+  const user: IUser = await UserModel.findOne({activationToken: req.params.token})
+  if (!user) {
+    res.sendStatus(404)
+  } else {
+    user.activationToken = ''
+    user.isActivated = true
+    await user.save()
+    res.sendStatus(200)
+  }
+})
+
+function randomString(length): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     let res = ''
-    for (let i=0; i<6; i++) {
+    for (let i=0; i<length; i++) {
         res += chars[Math.floor(Math.random() * chars.length)]
     }
     return res
@@ -70,9 +84,9 @@ function randomString(): string {
 
 async function createPrivateId(): Promise<string> {
     const ids = await UserModel.find({}).select('privateId')
-    let privateId = randomString()
+    let privateId = randomString(6)
     while (privateId in ids) {
-        privateId = randomString()
+        privateId = randomString(6)
     }
     return privateId
 }
@@ -88,15 +102,19 @@ router.post('/register', asyncHandler(async (req, res) => {
     const {pbKey, email, password} = req.body
     const privateId = await createPrivateId()
     const hashedPassword = await bcrypt.hash(password, 10)
+    const activationToken = randomString(32)
     const user = new UserModel({
           password: hashedPassword,
           email,
           pbKey,
           privateId,
           profile: {displayName: 'User'},
-          contacts: []
+          contacts: [],
+          isActivated: false,
+          activationToken
       })
       await user.save()
+      sendMail(email, activationToken)
       const token = user.generateAuthToken()
       res.header('x-auth-token', token).json({key: token})
 }))

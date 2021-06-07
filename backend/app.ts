@@ -8,6 +8,7 @@ import * as http from 'http'
 import * as WebSocket from 'ws'
 import websocket from './websocket'
 import {errorHandler} from './utils'
+import sendMail from './mail'
 
 if (!config.get('privateKey')) {
   console.error('FATAL ERROR: private key not defined')
